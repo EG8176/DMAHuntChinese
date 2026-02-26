@@ -15,6 +15,7 @@ public:
     int         Priority        = 0;       // 0=Distance, 1=Crosshair, 2=Both
     int         FOV             = 200;     // pixels radius
     int         Aimkey          = 5;       // VK code (5 = RMB)
+    float       HeadOffsetZ     = 0.0f;    // vertical bone-head offset (meters, +=up, -=down)
 
     // ── KMBox ─────────────────────────────────────────────────────────────
     int         KmboxBaudRate   = 115200;
@@ -79,6 +80,7 @@ public:
         j[ConfigName][LIT("Priority")]          = Priority;
         j[ConfigName][LIT("FOV")]               = FOV;
         j[ConfigName][LIT("Aimkey")]            = Aimkey;
+        j[ConfigName][LIT("HeadOffsetZ")]       = HeadOffsetZ;
         // KMBox
         j[ConfigName][LIT("KmboxBaudRate")]     = KmboxBaudRate;
         j[ConfigName][LIT("KmboxDeviceType")]   = KmboxDeviceType;
@@ -119,6 +121,7 @@ public:
         if (c.contains(LIT("Priority")))        Priority       = c[LIT("Priority")];
         if (c.contains(LIT("FOV")))             FOV            = c[LIT("FOV")];
         if (c.contains(LIT("Aimkey")))          Aimkey         = c[LIT("Aimkey")];
+        if (c.contains(LIT("HeadOffsetZ")))     HeadOffsetZ    = c[LIT("HeadOffsetZ")];
         // KMBox
         if (c.contains(LIT("KmboxBaudRate")))   KmboxBaudRate  = c[LIT("KmboxBaudRate")];
         if (c.contains(LIT("KmboxDeviceType"))) KmboxDeviceType= c[LIT("KmboxDeviceType")];

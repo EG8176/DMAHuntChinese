@@ -1448,6 +1448,14 @@ void ImGuiMenu::RenderAimbotTab() {
         "Crosshair: Prioritize targets near crosshair\n"
         "Both: Balance between distance and crosshair"
     );
+
+    SliderFloatWithInput("Head Offset Z", &Configs.Aimbot.HeadOffsetZ, -0.5f, 0.5f, "%.2f m");
+    ImGui::SameLine(); HelpMarker(
+        "Vertical offset for bone head aim point (meters).\n"
+        "+ = aim higher (above head)\n"
+        "- = aim lower (neck/chest)\n"
+        "0 = exact head bone position"
+    );
     ImGui::EndGroup();
 
     ImGui::Separator();

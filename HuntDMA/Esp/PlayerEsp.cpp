@@ -311,6 +311,7 @@ void DrawPlayersEsp() {
       if (Configs.Player.DrawHead &&
           ent->GetType() != EntityType::FriendlyPlayer && !isDead) {
         Vector3 boneHeadWorld = ent->GetBonePosition(0); // bone 0 = head
+        boneHeadWorld.z += Configs.Aimbot.HeadOffsetZ;
         if (!boneHeadWorld.IsZero()) {
           Vector2 boneHeadScreen = CameraInstance->WorldToScreen(boneHeadWorld, false);
           if (!boneHeadScreen.IsZero()) {
