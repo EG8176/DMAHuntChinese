@@ -46,22 +46,26 @@ void DrawBossesEsp() {
   if (EnvironmentInstance->GetObjectCount() < 10)
     return;
 
-  std::lock_guard<std::mutex> lock(EntityMutex);
+  // Brief lock to copy render list, then release
+  std::vector<std::shared_ptr<WorldEntity>> templist;
+  {
+    std::lock_guard<std::mutex> lock(EntityMutex);
+    templist = EnvironmentInstance->GetRenderBossesList();
+  }
 
   if (Configs.Bosses.Enable) {
-    const auto &templist = EnvironmentInstance->GetBossesList();
     if (!templist.empty()) {
       for (std::shared_ptr<WorldEntity> ent : templist) {
         if (ent == nullptr)
           continue;
-        int distance = (int)Vector3::Distance(ent->GetPosition(),
-                                              CameraInstance->GetPosition());
+        int distance = (int)Vector3::Distance(ent->Render.Position,
+                                              CameraInstance->GetRenderPosition());
         if (distance <= 0 || distance > Configs.Bosses.MaxDistance)
           continue;
 
-        if (!ent->GetValid())
+        if (!ent->Render.Valid)
           continue;
-        Vector2 pos = CameraInstance->WorldToScreen(ent->GetPosition());
+        Vector2 pos = CameraInstance->RenderWorldToScreen(ent->Render.Position);
         if (pos.x <= 0 || pos.y <= 0)
           continue;
         std::string wname =
@@ -86,11 +90,15 @@ void DrawPlayersEsp() {
   if (EnvironmentInstance->GetObjectCount() < 10)
     return;
 
-  std::lock_guard<std::mutex> lock(EntityMutex);
+  // Brief lock to copy render list, then release
+  std::vector<std::shared_ptr<WorldEntity>> templist;
+  {
+    std::lock_guard<std::mutex> lock(EntityMutex);
+    templist = EnvironmentInstance->GetRenderPlayerList();
+  }
 
   if (Configs.Player.Enable || Configs.Player.BoxType > 0 ||
       Configs.Player.Snaplines) {
-    const auto &templist = EnvironmentInstance->GetPlayerList();
     if (templist.empty())
       return;
 
@@ -108,14 +116,14 @@ void DrawPlayersEsp() {
       // Strictly check for Loot Box class name to avoid self-referencing bug
       if (ent != nullptr &&
           strstr(ent->GetEntityClassName().name, "Hunter_Loot")) {
-        deadPositions.push_back(ent->GetPosition());
+        deadPositions.push_back(ent->Render.Position);
         ent->SetType(
             EntityType::DeadPlayer); // Ensure loot boxes are always Dead
       }
     }
 
     for (std::shared_ptr<WorldEntity> ent : templist) {
-      if (ent == nullptr || ent->GetType() == EntityType::LocalPlayer)
+      if (ent == nullptr || ent->Render.Type == EntityType::LocalPlayer)
         continue;
 
       // Skip Hunter_Loot entities (they are used for detection only, not to be
@@ -123,27 +131,27 @@ void DrawPlayersEsp() {
       if (strstr(ent->GetEntityClassName().name, "Hunter_Loot"))
         continue;
 
-      auto playerPos = ent->GetPosition();
+      auto playerPos = ent->Render.Position;
 
       if (!Configs.Player.DrawFriendsHP && !Configs.Player.DrawBonesFriend &&
-          ent->GetType() == EntityType::FriendlyPlayer)
+          ent->Render.Type == EntityType::FriendlyPlayer)
         continue;
 
-      if (!ent->GetValid() || ent->IsHidden()) // Has extracted
+      if (!ent->Render.Valid || ent->Render.Hidden) // Has extracted
         continue;
 
       // Check if it is a Player Model
       if (strstr(ent->GetEntityClassName().name, "HunterBasic")) {
         // 1. Determine team (Friend/Enemy) based on silhouettes_param
-        if (ent->GetRenderNode().silhouettes_param == 0x8CD2FF ||
-            ent->GetRenderNode().silhouettes_param == 0x3322eeff) {
+        if (ent->Render.Node.silhouettes_param == 0x8CD2FF ||
+            ent->Render.Node.silhouettes_param == 0x3322eeff) {
           ent->SetType(EntityType::FriendlyPlayer);
         } else {
           ent->SetType(EntityType::EnemyPlayer);
         }
 
         // 2. Check if dead based on HP (primary method)
-        auto health = ent->GetHealth();
+        auto health = ent->Render.Health;
         if (health.current_hp == 0 && IsValidHP(health.current_max_hp)) {
           ent->SetType(EntityType::DeadPlayer);
         }
@@ -159,7 +167,7 @@ void DrawPlayersEsp() {
         }
       }
 
-      bool isDead = (ent->GetType() == EntityType::DeadPlayer);
+      bool isDead = (ent->Render.Type == EntityType::DeadPlayer);
 
       // HP-based dead detection now active
 
@@ -170,20 +178,20 @@ void DrawPlayersEsp() {
         continue;
 
       int distance =
-          (int)Vector3::Distance(playerPos, CameraInstance->GetPosition());
+          (int)Vector3::Distance(playerPos, CameraInstance->GetRenderPosition());
       if (distance <= 0 || distance > (isDead ? Configs.Player.DeadMaxDistance
                                               : Configs.Player.MaxDistance))
         continue;
 
       auto tempPos = playerPos;
-      Vector2 feetPos = CameraInstance->WorldToScreen(playerPos, false);
+      Vector2 feetPos = CameraInstance->RenderWorldToScreen(playerPos, false);
       if (feetPos.IsZero())
         continue;
 
       tempPos.z = playerPos.z + 1.7f;
       Vector2 headPos;
       if (Configs.Player.Snaplines) {
-        headPos = CameraInstance->WorldToScreen(tempPos, false);
+        headPos = CameraInstance->RenderWorldToScreen(tempPos, false);
         if (headPos.IsZero())
           continue;
       }
@@ -191,13 +199,13 @@ void DrawPlayersEsp() {
       tempPos.z = playerPos.z + 2.0f;
       Vector2 uppderFramePos;
       if ((Configs.Player.BoxType > 0 || Configs.Player.DrawHealthBars)) {
-        uppderFramePos = CameraInstance->WorldToScreen(tempPos, false);
+        uppderFramePos = CameraInstance->RenderWorldToScreen(tempPos, false);
         if (uppderFramePos.IsZero())
           continue;
       }
 
       if (Configs.Player.Snaplines && !headPos.IsZero()) {
-        auto colour = ent->GetType() == EntityType::FriendlyPlayer
+        auto colour = ent->Render.Type == EntityType::FriendlyPlayer
                           ? Configs.Player.FriendColor
                           : Configs.Player.FramesColor;
         ESPRenderer::DrawLine(ImVec2(center.x, center.y),
@@ -207,7 +215,7 @@ void DrawPlayersEsp() {
       tempPos.z = playerPos.z + 2.1f;
       Vector2 healthBarPos;
       if (Configs.Player.DrawHealthBars) {
-        healthBarPos = CameraInstance->WorldToScreen(tempPos, false);
+        healthBarPos = CameraInstance->RenderWorldToScreen(tempPos, false);
         if (healthBarPos.IsZero())
           continue;
       }
@@ -221,14 +229,14 @@ void DrawPlayersEsp() {
       }
 
       if (Configs.Player.BoxType > 0 &&
-          ent->GetType() != EntityType::FriendlyPlayer && !isDead) {
+          ent->Render.Type != EntityType::FriendlyPlayer && !isDead) {
         // Determine top position based on state (Alive = 2.0m, Dead/Loot
         // = 1.85m)
         Vector2 topPos = uppderFramePos;
         if (isDead) {
           auto tempPosTop = playerPos;
           tempPosTop.z = playerPos.z + 1.85f;
-          topPos = CameraInstance->WorldToScreen(tempPosTop, false);
+          topPos = CameraInstance->RenderWorldToScreen(tempPosTop, false);
         }
 
         if (!topPos.IsZero()) {
@@ -242,7 +250,7 @@ void DrawPlayersEsp() {
           Vector2 B1 = topPos + offset;  // Top-left
           Vector2 B2 = topPos - offset;  // Top-right
 
-          auto colour = ent->GetType() == EntityType::FriendlyPlayer
+          auto colour = ent->Render.Type == EntityType::FriendlyPlayer
                             ? Configs.Player.FriendColor
                             : Configs.Player.FramesColor;
 
@@ -309,11 +317,11 @@ void DrawPlayersEsp() {
 
       // ── Draw Head Circle (independent, uses bone head position) ──
       if (Configs.Player.DrawHead &&
-          ent->GetType() != EntityType::FriendlyPlayer && !isDead) {
-        Vector3 boneHeadWorld = ent->GetBonePosition(0); // bone 0 = head
+          ent->Render.Type != EntityType::FriendlyPlayer && !isDead) {
+        Vector3 boneHeadWorld = ent->Render.BonePositions[0]; // bone 0 = head
         boneHeadWorld.z += Configs.Aimbot.HeadOffsetZ;
         if (!boneHeadWorld.IsZero()) {
-          Vector2 boneHeadScreen = CameraInstance->WorldToScreen(boneHeadWorld, false);
+          Vector2 boneHeadScreen = CameraInstance->RenderWorldToScreen(boneHeadWorld, false);
           if (!boneHeadScreen.IsZero()) {
             // Estimate radius from frame width if box is drawn, else use distance-based
             float headRadius = 5.0f; // fallback
@@ -325,7 +333,7 @@ void DrawPlayersEsp() {
                            Configs.Player.HeadCircleSize;
             } else {
               // Distance-based radius when no box
-              float dist = Vector3::Distance(playerPos, CameraInstance->GetPosition());
+              float dist = Vector3::Distance(playerPos, CameraInstance->GetRenderPosition());
               headRadius = std::max(3.0f, 500.0f / dist / Configs.Player.HeadCircleSize);
             }
             auto colour = Configs.Player.FramesColor;
@@ -337,7 +345,7 @@ void DrawPlayersEsp() {
       }
 
       if (Configs.Player.DrawHealthBars) {
-        auto health = ent->GetHealth();
+        auto health = ent->Render.Health;
         Vector2 Health1 = healthBarPos - offset;
         Vector2 Health2 = healthBarPos + offset;
         auto lineHeight =
@@ -357,7 +365,7 @@ void DrawPlayersEsp() {
 
         // Determine health bar color based on HP percentage
         ImVec4 healthColor;
-        if (ent->GetType() == EntityType::FriendlyPlayer) {
+        if (ent->Render.Type == EntityType::FriendlyPlayer) {
           // Friendly players: use blue or dynamic color based on config
           healthColor = ImVec4(0.058823f, 0.407843f, 0.909803f, 1.0f); // Blue
         } else {
@@ -384,7 +392,7 @@ void DrawPlayersEsp() {
       }
 
       // ── Skeleton ESP (cached bone projections) ────────────────────────────
-      bool isFriend = (ent->GetType() == EntityType::FriendlyPlayer);
+      bool isFriend = (ent->Render.Type == EntityType::FriendlyPlayer);
       bool drawBonesNow = (!isFriend && Configs.Player.DrawBones && !isDead)
                        || (isFriend  && Configs.Player.DrawBonesFriend);
       if (drawBonesNow)
@@ -396,9 +404,9 @@ void DrawPlayersEsp() {
 
         for (int i = 0; i < BONE_COUNT; i++)
         {
-          Vector3 worldPos = ent->GetBonePosition(i);
+          Vector3 worldPos = ent->Render.BonePositions[i];
           if (!worldPos.IsZero()) {
-            screenBones[i] = CameraInstance->WorldToScreen(worldPos, false);
+            screenBones[i] = CameraInstance->RenderWorldToScreen(worldPos, false);
             boneValid[i] = !screenBones[i].IsZero();
           }
         }
@@ -423,7 +431,7 @@ void DrawPlayersEsp() {
       }
 
       if (!Configs.Player.Enable ||
-          ent->GetType() == EntityType::FriendlyPlayer)
+          ent->Render.Type == EntityType::FriendlyPlayer)
         continue;
 
       std::string wname = (Configs.Player.Name || isDead)
@@ -436,13 +444,25 @@ void DrawPlayersEsp() {
               : "";
       std::string whealth =
           Configs.Player.HP
-              ? std::to_string(ent->GetHealth().current_hp) + "/" +
-                    std::to_string(ent->GetHealth().current_max_hp) + "[" +
-                    std::to_string(ent->GetHealth().regenerable_max_hp) + "]"
+              ? std::to_string(ent->Render.Health.current_hp) + "/" +
+                    std::to_string(ent->Render.Health.current_max_hp) + "[" +
+                    std::to_string(ent->Render.Health.regenerable_max_hp) + "]"
               : "";
+      std::string wweapons;
+      if (Configs.Player.ShowWeapons) {
+          if (!ent->Render.WeaponName1.empty())
+              wweapons = ent->Render.WeaponName1;
+          if (!ent->Render.WeaponName2.empty())
+              wweapons += " | " + ent->Render.WeaponName2;
+      }
+      std::string espText = wname + wdistance;
+      if (!whealth.empty())
+          espText += "\n" + whealth;
+      if (!wweapons.empty())
+          espText += "\n" + wweapons;
       ESPRenderer::DrawText(ImVec2(feetPos.x, feetPos.y),
-                            wname + wdistance + "\n" + whealth,
-                            ent->GetType() == EntityType::FriendlyPlayer
+                            espText,
+                            ent->Render.Type == EntityType::FriendlyPlayer
                                 ? Configs.Player.FriendColor
                                 : Configs.Player.TextColor,
                             Configs.Player.FontSize, TopCenter);

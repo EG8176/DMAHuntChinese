@@ -28,7 +28,11 @@ static void DrawPlayerList() {
   if (EnvironmentInstance == nullptr) return;
   int y = ESPRenderer::GetScreenHeight() / 2;
 
-  const auto &templist = EnvironmentInstance->GetPlayerList();
+  std::vector<std::shared_ptr<WorldEntity>> templist;
+  {
+    std::lock_guard<std::mutex> lock(EntityMutex);
+    templist = EnvironmentInstance->GetRenderPlayerList();
+  }
 
   if (templist.empty())
     return;
@@ -36,28 +40,54 @@ static void DrawPlayerList() {
   std::vector<std::pair<int, std::string>> playerInfoList;
 
   for (std::shared_ptr<WorldEntity> ent : templist) {
-    if (!ent || ent->GetType() == EntityType::FriendlyPlayer)
+    if (!ent || ent->Render.Type == EntityType::FriendlyPlayer)
       continue;
 
-    int distance = (int)Vector3::Distance(ent->GetPosition(),
-                                          CameraInstance->GetPosition());
-    if (ent->GetType() == EntityType::LocalPlayer || !ent->GetValid() ||
-        ent->IsHidden())
+    if (ent->Render.Type == EntityType::LocalPlayer || !ent->Render.Valid ||
+        ent->Render.Hidden)
       continue;
 
-    // Skip dead players (HP based detection)
-    auto health = ent->GetHealth();
-    if (health.current_hp == 0 && IsValidHP(health.current_max_hp))
+    // Skip Hunter_Loot entities — they have no HP chain and produce garbage
+    // HP values. They exist only for dead-body proximity detection in ESP.
+    if (strstr(ent->GetEntityClassName().name, "Hunter_Loot"))
       continue;
+
+    // Determine dead status using same logic as ESP
+    auto health = ent->Render.Health;
+    bool isDead = (ent->Render.Type == EntityType::DeadPlayer);
+
+    // For HunterBasic: check HP-based death (same as ESP)
+    if (strstr(ent->GetEntityClassName().name, "HunterBasic")) {
+      if (health.current_hp == 0 && IsValidHP(health.current_max_hp))
+        isDead = true;
+    }
+
+    // Skip entities with invalid/garbage HP (failed HP chain read)
+    if (!isDead && !IsValidHP(health.current_max_hp))
+      continue;
+
+    int distance = (int)Vector3::Distance(ent->Render.Position,
+                                          CameraInstance->GetRenderPosition());
 
     std::string wname =
         Configs.Player.Name ? LOC("entity", ent->GetTypeAsString()) : "";
     std::string wdistance =
         Configs.Player.Distance ? "[" + std::to_string(distance) + "m]" : "";
+
+    // Sanitize HP for display: if dead and HP values are garbage, show 0
+    unsigned int displayHp = health.current_hp;
+    unsigned int displayMaxHp = health.current_max_hp;
+    unsigned int displayRegenHp = health.regenerable_max_hp;
+    if (isDead && !IsValidHP(health.current_max_hp)) {
+      displayHp = 0;
+      displayMaxHp = 0;
+      displayRegenHp = 0;
+    }
+
     std::string whealth =
-        std::to_string(ent->GetHealth().current_hp) + "/" +
-        std::to_string(ent->GetHealth().current_max_hp) + "[" +
-        std::to_string(ent->GetHealth().regenerable_max_hp) + "]";
+        std::to_string(displayHp) + "/" +
+        std::to_string(displayMaxHp) + "[" +
+        std::to_string(displayRegenHp) + "]";
 
     std::string playerInfo = wname + " " + whealth + " " + wdistance;
 
@@ -133,11 +163,15 @@ void DrawRadar() {
   if (!Keyboard::IsKeyDown(Configs.Overlay.RadarKey))
     return;
 
-  const auto &tempPlayerList = EnvironmentInstance->GetPlayerList();
+  std::vector<std::shared_ptr<WorldEntity>> tempPlayerList;
+  {
+    std::lock_guard<std::mutex> lock(EntityMutex);
+    tempPlayerList = EnvironmentInstance->GetRenderPlayerList();
+  }
   std::shared_ptr<WorldEntity> LocalPlayer = nullptr;
 
   for (const auto &ent : tempPlayerList) {
-    if (ent && ent->GetType() == EntityType::LocalPlayer) {
+    if (ent && ent->Render.Type == EntityType::LocalPlayer) {
       LocalPlayer = ent;
       break;
     }
@@ -181,10 +215,10 @@ void DrawRadar() {
   if (LocalPlayer) {
     // Draw Local Player
     if (Configs.Overlay.RadarDrawSelf) {
-      float playerMapX = ((LocalPlayer->GetPosition().x - worldMinX) /
+      float playerMapX = ((LocalPlayer->Render.Position.x - worldMinX) /
                           (worldMaxX - worldMinX)) *
                          MapSize;
-      float playerMapY = ((worldMaxY - LocalPlayer->GetPosition().y) /
+      float playerMapY = ((worldMaxY - LocalPlayer->Render.Position.y) /
                           (worldMaxY - worldMinY)) *
                          MapSize;
 
@@ -200,25 +234,25 @@ void DrawRadar() {
 
   // Draw Enemies
   for (const auto &ent : tempPlayerList) {
-    if (!ent || ent->GetType() == EntityType::LocalPlayer ||
-        ent->GetType() == EntityType::FriendlyPlayer)
+    if (!ent || ent->Render.Type == EntityType::LocalPlayer ||
+        ent->Render.Type == EntityType::FriendlyPlayer)
       continue;
 
-    if (!ent->GetValid() || ent->IsHidden())
+    if (!ent->Render.Valid || ent->Render.Hidden)
       continue;
 
     ImVec4 dotColor;
-    if (ent->GetType() == EntityType::DeadPlayer) {
+    if (ent->Render.Type == EntityType::DeadPlayer) {
       dotColor = Configs.Overlay.DeadRadarColor;
     } else {
       dotColor = Configs.Overlay.EnemyRadarColor;
     }
 
     float enemyMapX =
-        ((ent->GetPosition().x - worldMinX) / (worldMaxX - worldMinX)) *
+        ((ent->Render.Position.x - worldMinX) / (worldMaxX - worldMinX)) *
         MapSize;
     float enemyMapY =
-        ((worldMaxY - ent->GetPosition().y) / (worldMaxY - worldMinY)) *
+        ((worldMaxY - ent->Render.Position.y) / (worldMaxY - worldMinY)) *
         MapSize;
 
     float enemyScreenX =

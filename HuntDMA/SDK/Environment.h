@@ -59,6 +59,10 @@ private:
   std::vector<std::shared_ptr<WorldEntity>> POIList;
   std::vector<std::shared_ptr<WorldEntity>> TraitList;
 
+  // ── Render-safe list copies (double buffer) ─────────────────────────────
+  std::vector<std::shared_ptr<WorldEntity>> RenderPlayerList;
+  std::vector<std::shared_ptr<WorldEntity>> RenderBossesList;
+
 public:
   uint64_t GetSystemGlobalEnvironment() { return SystemGlobalEnvironment; }
   uint64_t GetEntitySystem() { return EntitySystem; }
@@ -75,11 +79,18 @@ public:
   void AssignMapType(char *name);
   Environment();
   void ClearConsole();
+  void CommitToRenderBuffer();  // copy live → render lists + per-entity commit
   const std::vector<std::shared_ptr<WorldEntity>> &GetPlayerList() {
     return PlayerList;
   }
   const std::vector<std::shared_ptr<WorldEntity>> &GetBossesList() {
     return BossesList;
+  }
+  const std::vector<std::shared_ptr<WorldEntity>> &GetRenderPlayerList() {
+    return RenderPlayerList;
+  }
+  const std::vector<std::shared_ptr<WorldEntity>> &GetRenderBossesList() {
+    return RenderBossesList;
   }
   const std::vector<std::shared_ptr<WorldEntity>> &GetSupplyList() {
     return SupplyList;

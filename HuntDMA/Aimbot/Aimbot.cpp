@@ -196,6 +196,8 @@ bool StickTarget()
 	Vector2 center = GetCenterOfScreen();
 	if (!CameraInstance || !EnvironmentInstance || !AimbotTarget) return false;
 	if (!AimbotTarget->GetValid()) return false;
+	if (Configs.Aimbot.IgnoreDead && AimbotTarget->GetType() == EntityType::DeadPlayer) return false;
+	if (Configs.Aimbot.IgnoreDead && AimbotTarget->GetHealth().current_hp == 0) return false;
 	if (Vector3::Distance(CameraInstance->GetPosition(), AimbotTarget->GetPosition()) > Configs.Aimbot.MaxDistance)
 		return false;
 	if (AimbotTarget->GetType() == EntityType::EnemyPlayer && !Configs.Aimbot.TargetPlayers)
@@ -228,6 +230,8 @@ static std::shared_ptr<CheatFunction> UpdateTarget = std::make_shared<CheatFunct
 		if (!player->GetValid()) continue;
 		if (player->GetType() == EntityType::FriendlyPlayer) continue;
 		if (player->GetType() == EntityType::LocalPlayer)    continue;
+		if (Configs.Aimbot.IgnoreDead && player->GetType() == EntityType::DeadPlayer) continue;
+		if (Configs.Aimbot.IgnoreDead && player->GetHealth().current_hp == 0) continue;
 		if (Vector3::Distance(CameraInstance->GetPosition(), player->GetPosition()) > Configs.Aimbot.MaxDistance)
 			continue;
 
@@ -314,6 +318,15 @@ void Aimbot()
 		return;
 	}
 
+	// Drop target immediately if dead (don't wait for UpdateTarget 50ms cycle)
+	if (Configs.Aimbot.IgnoreDead &&
+	    (AimbotTarget->GetType() == EntityType::DeadPlayer ||
+	     AimbotTarget->GetHealth().current_hp == 0))
+	{
+		AimbotTarget = nullptr;
+		return;
+	}
+
 	// Get ballistic-predicted screen position (1 WorldToScreen call total)
 	Vector2 screenpos    = GetPredictedHeadScreenPosition(AimbotTarget);
 	Vector2 Centerscreen = GetCenterOfScreen();
@@ -350,10 +363,10 @@ void Aimbot()
 	ApplyAxisUnlock(x, y, distToTarget);
 
 	// ── Mouse output ──────────────────────────────────────────────────────────
-	// Note: DMA updates at ~60Hz (16.6ms). Sending sub-16ms updates causes double-correction overshoot.
-	// We cap the update rate to at least 16ms to synchronize with memory updates.
-	const int lockUpdateRateMs    = std::max(16, Configs.Aimbot.UpdateRate / 2);
-	const int normalUpdateRateMs  = std::max(16, Configs.Aimbot.UpdateRate);
+	// DMA now updates at ~500Hz (2ms). We still cap moves to avoid serial flooding.
+	// 4ms floor keeps updates synchronised with fresh memory data.
+	const int lockUpdateRateMs    = std::max(4, Configs.Aimbot.UpdateRate / 2);
+	const int normalUpdateRateMs  = std::max(4, Configs.Aimbot.UpdateRate);
 	const int updateRateMs        = (distToTarget < LOCK_PX) ? lockUpdateRateMs : normalUpdateRateMs;
 
 	if (KmboxStart + std::chrono::milliseconds(updateRateMs) < std::chrono::system_clock::now())

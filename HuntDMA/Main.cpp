@@ -107,12 +107,18 @@ void DmaDataUpdateThread()
 				continue;
 			}
 
-			// Lock while DMA reads are committed to shared data
+			// Phase 1: DMA scatter reads — NO lock
+			// Render thread is free to draw from the previous snapshot while this runs.
+			UpdateCam->Execute();
+			UpdatePlayers->Execute();
+			UpdateBosses->Execute();
+
+			// Phase 2: Commit snapshot — brief lock (~microseconds)
+			// Copies all live data → render-safe snapshot so render thread sees consistent data.
 			{
 				std::lock_guard<std::mutex> lock(EntityMutex);
-				UpdateCam->Execute();
-				UpdatePlayers->Execute();
-				UpdateBosses->Execute();
+				CameraInstance->CommitRenderData();
+				EnvironmentInstance->CommitToRenderBuffer();
 			}
 
 			if (enableAimBot) Aimbot();
@@ -122,7 +128,7 @@ void DmaDataUpdateThread()
 			Sleep(1000);
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		std::this_thread::sleep_for(std::chrono::milliseconds(2));
 	}
 }
 

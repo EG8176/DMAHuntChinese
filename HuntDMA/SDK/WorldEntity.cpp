@@ -122,7 +122,37 @@ void WorldEntity::UpdateNode(VMMDLL_SCATTER_HANDLE handle)
 
 void WorldEntity::UpdateHealth(VMMDLL_SCATTER_HANDLE handle)
 {
-	TargetProcess.AddScatterReadRequest(handle, HpPointer5, &Health, sizeof(HealthBar));
+	// Validate pointer before reading — dummies/broken chains have 0 or garbage pointers
+	if (HpPointer5 > 0x10000 && HpPointer5 < 0x7FFFFFFFFFFF)
+		TargetProcess.AddScatterReadRequest(handle, HpPointer5, &Health, sizeof(HealthBar));
+}
+
+void WorldEntity::RetryHpChain()
+{
+	// Standard chain used off2=0x20. Try alternative offset 0x38 (used by dummies/different entity archetypes)
+	static const uint64_t altOffsets[] = { 0x38, 0x30, 0x28, 0x40, 0x48 };
+	
+	for (uint64_t altOff2 : altOffsets)
+	{
+		uint64_t p2 = TargetProcess.Read<uint64_t>(HpPointer1 + altOff2);
+		if (p2 < 0x10000 || p2 > 0x7FFFFFFFFFFF) continue;
+		
+		uint64_t p3 = TargetProcess.Read<uint64_t>(p2 + HpOffset3);
+		if (p3 < 0x10000 || p3 > 0x7FFFFFFFFFFF) continue;
+		
+		uint64_t p4 = TargetProcess.Read<uint64_t>(p3 + HpOffset4);
+		if (p4 < 0x10000 || p4 > 0x7FFFFFFFFFFF) continue;
+		
+		uint64_t p5 = TargetProcess.Read<uint64_t>(p4 + HpOffset5);
+		if (p5 < 0x10000 || p5 > 0x7FFFFFFFFFFF) continue;
+		
+		// Found a valid chain — update all pointers
+		HpPointer2 = p2;
+		HpPointer3 = p3;
+		HpPointer4 = p4;
+		HpPointer5 = p5;
+		return;
+	}
 }
 
 void WorldEntity::UpdateBones()
@@ -264,6 +294,23 @@ void WorldEntity::ApplyBoneWorldTransform()
 			BonePositions[i] = WorldMatrix.TransformPoint(LocalBonePositions[i]);
 	}
 	HeadPosition = BonePositions[0];
+}
+
+// ── Double-buffer: copy live DMA data → render-safe snapshot ─────────────
+// Called under brief EntityMutex after all scatter reads + transforms complete.
+void WorldEntity::CommitRenderData()
+{
+	Render.Position      = Position;
+	Render.HeadPosition  = GetHeadPosition();
+	Render.Health        = Health;
+	Render.Node          = Node;
+	Render.Type          = Type;
+	Render.InternalFlags = InternalFlags;
+	Render.Valid         = Valid;
+	Render.Hidden        = Hidden;
+	Render.WeaponName1   = WeaponName1;
+	Render.WeaponName2   = WeaponName2;
+	memcpy(Render.BonePositions, BonePositions, sizeof(BonePositions));
 }
 
 void WorldEntity::UpdateExtraction(VMMDLL_SCATTER_HANDLE handle)

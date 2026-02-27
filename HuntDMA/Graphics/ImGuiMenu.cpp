@@ -641,6 +641,8 @@ void ImGuiMenu::RenderPlayerESPTab() {
         ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Player.Distance);
         ImGui::SameLine();
         ImGui::Checkbox(LOC("menu", "players.HP").c_str(), &Configs.Player.HP);
+        ImGui::SameLine();
+        ImGui::Checkbox("Show Weapons", &Configs.Player.ShowWeapons);
     }
 
     ImGui::Checkbox(LOC("menu", "players.ShowDead").c_str(), &Configs.Player.ShowDead);
@@ -1289,6 +1291,9 @@ void ImGuiMenu::RenderAimbotTab() {
 
     ImGui::Checkbox("Target Players", &Configs.Aimbot.TargetPlayers);
     ImGui::SameLine(); HelpMarker("Only target player entities");
+
+    ImGui::Checkbox("Ignore Dead", &Configs.Aimbot.IgnoreDead);
+    ImGui::SameLine(); HelpMarker("Skip dead/downed players (DeadPlayer type or HP = 0)");
 
     if (ImGui::Button("Test Connection (Square Move)")) {
         kmbox::test_move();

@@ -32,6 +32,7 @@ public:
     ImVec4 BonesColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     bool DrawBonesFriend = false;
     ImVec4 FriendBonesColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+    bool ShowWeapons = true;
     bool ShowPlayerList = true;
     int PlayerListFontSize = 15;
     ImVec4 PlayerListColor = ImVec4(0.807843f, 0.807843f, 0.807843f, 1.0f);
@@ -80,6 +81,7 @@ public:
         j[ConfigName][LIT("ToggleKey")] = ToggleKey;
         j[ConfigName][LIT("DrawBones")] = DrawBones;
         j[ConfigName][LIT("DrawBonesFriend")] = DrawBonesFriend;
+        j[ConfigName][LIT("ShowWeapons")] = ShowWeapons;
         ToJsonColor(&j, LIT("TextColor"), &TextColor);
         ToJsonColor(&j, LIT("FramesColor"), &FramesColor);
         ToJsonColor(&j, LIT("FriendColor"), &FriendColor);
@@ -149,6 +151,8 @@ public:
             DrawBones = j[ConfigName][LIT("DrawBones")];
         if (j[ConfigName].contains(LIT("DrawBonesFriend")))
             DrawBonesFriend = j[ConfigName][LIT("DrawBonesFriend")];
+        if (j[ConfigName].contains(LIT("ShowWeapons")))
+            ShowWeapons = j[ConfigName][LIT("ShowWeapons")];
     }
 };
 

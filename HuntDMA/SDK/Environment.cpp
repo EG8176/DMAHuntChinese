@@ -243,6 +243,19 @@ void Environment::UpdateBossesList()
 	BossesList = templist;
 }
 
+// ── Double-buffer: commit live data → render-safe copies ─────────────────
+// Called under brief EntityMutex after all DMA scatter reads complete.
+void Environment::CommitToRenderBuffer()
+{
+	for (auto& ent : PlayerList)
+		if (ent) ent->CommitRenderData();
+	RenderPlayerList = PlayerList;
+
+	for (auto& ent : BossesList)
+		if (ent) ent->CommitRenderData();
+	RenderBossesList = BossesList;
+}
+
 void Environment::CacheEntities()
 {
 	GetEntities();
@@ -329,6 +342,14 @@ void Environment::CacheEntities()
 	std::vector<std::shared_ptr<WorldEntity>> temptraplist;
 	std::vector<std::shared_ptr<WorldEntity>> temppoilist;
 	std::vector<std::shared_ptr<WorldEntity>> temptraitlist;
+
+	// Weapon entities: collect during classification, match to players by position later
+	struct WeaponInfo {
+		std::string className;
+		Vector3 position;
+	};
+	std::vector<WeaponInfo> weaponEntities;
+
 	for (std::shared_ptr<WorldEntity> ent : entitypointerlist)
 	{
 		if (ent == nullptr)
@@ -347,6 +368,20 @@ void Environment::CacheEntities()
 			continue;
 		if (entityClassName == nullptr || entityClassName[0] == '\0')
 			continue;
+
+		// Collect weapon entities (class names starting with digit + letter pattern)
+		// e.g. "1rRevolver...", "2rRifle...", "1mBlunt...", "2eToolThrow...", "2tConsumable..."
+		// Exclude tools ('e'), consumables ('t'), and 1-slot melee ('1m') to always show primary/secondary weapons
+		if (entityClassName[0] >= '1' && entityClassName[0] <= '4' &&
+			(entityClassName[1] == 'r' || (entityClassName[1] == 'm' && entityClassName[0] != '1')) &&
+			strstr(entityClassName, "WW") == NULL &&   // exclude world items (shovels, pitchforks on ground)
+			strstr(entityClassName, "S_2") == NULL)     // exclude spawnable world items
+		{
+			WeaponInfo wi;
+			wi.className = entityClassName;
+			wi.position = ent->GetPosition();
+			weaponEntities.push_back(wi);
+		}
 		if (strstr(entityClassName, "Hunter_Loot") != NULL)
 		{
 			ent->SetType(EntityType::DeadPlayer);
@@ -807,6 +842,37 @@ void Environment::CacheEntities()
 	TargetProcess.ExecuteReadScatter(handle);
 	TargetProcess.CloseScatterHandle(handle);
 
+	// Retry HP chain for entities where standard offset failed (e.g., dummies use off2=0x38 instead of 0x20)
+	for (std::shared_ptr<WorldEntity> ent : templayerlist)
+	{
+		if (ent == nullptr) continue;
+		if (ent->IsHpChainValid()) continue; // already has valid chain
+		ent->RetryHpChain();
+	}
+
+	// Match weapon entities to players by position proximity
+	for (std::shared_ptr<WorldEntity> player : templayerlist)
+	{
+		if (player == nullptr) continue;
+		Vector3 playerPos = player->GetPosition();
+		std::string w1, w2;
+		for (const auto& wi : weaponEntities)
+		{
+			float dx = playerPos.x - wi.position.x;
+			float dy = playerPos.y - wi.position.y;
+			float dz = playerPos.z - wi.position.z;
+			float distSq = dx*dx + dy*dy + dz*dz;
+			if (distSq < 4.0f) // within 2 meters
+			{
+				std::string name = ParseWeaponName(wi.className);
+				if (w1.empty())
+					w1 = name;
+				else if (w2.empty() && name != w1)
+					w2 = name;
+			}
+		}
+		player->SetWeapons(w1, w2);
+	}
 
 	std::swap(PlayerList, templayerlist);
 	std::swap(BossesList, tempbosseslist);

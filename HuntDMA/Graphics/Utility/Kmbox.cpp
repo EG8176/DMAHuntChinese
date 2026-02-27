@@ -558,14 +558,16 @@ namespace kmbox
 		if (!connected)
 			return;
 			
-		// Move in a small square to demonstrate control
-		move(50, 0);   // Right
-		Sleep(100);
-		move(0, 50);   // Down
-		Sleep(100);
-		move(-50, 0);  // Left
-		Sleep(100);
-		move(0, -50);  // Up
+		// Run asynchronously so Sleep calls don't block the UI/render thread
+		std::thread([] {
+			move(50, 0);   // Right
+			Sleep(100);
+			move(0, 50);   // Down
+			Sleep(100);
+			move(-50, 0);  // Left
+			Sleep(100);
+			move(0, -50);  // Up
+		}).detach();
 	}
 
 	void left_click()
