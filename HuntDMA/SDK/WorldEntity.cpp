@@ -310,6 +310,7 @@ void WorldEntity::CommitRenderData()
 	Render.Hidden        = Hidden;
 	Render.WeaponName1   = WeaponName1;
 	Render.WeaponName2   = WeaponName2;
+	Render.TeamId        = TeamId;
 	memcpy(Render.BonePositions, BonePositions, sizeof(BonePositions));
 }
 

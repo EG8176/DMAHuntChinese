@@ -298,6 +298,7 @@ struct EntityRenderData {
 	bool       Hidden     = false;
 	std::string WeaponName1;  // Primary weapon
 	std::string WeaponName2;  // Secondary weapon
+	int        TeamId     = -1; // -1=unassigned, 0=solo, 1..N=team number
 };
 
 class WorldEntity
@@ -368,6 +369,7 @@ private:
 	bool Hidden = false;
 	std::string WeaponName1;  // primary weapon (set during CacheEntities)
 	std::string WeaponName2;  // secondary weapon
+	int TeamId = -1;          // -1=unassigned, 0=solo, 1..N=team number (set once in CacheEntities)
 
 	bool Valid = true;
 
@@ -486,6 +488,8 @@ public:
 		WeaponName1 = w1;
 		WeaponName2 = w2;
 	}
+	void SetTeamId(int id) { TeamId = id; }
+	int  GetTeamId() const { return TeamId; }
 	Vector3 GetHeadPosition() const { return HeadBonePtr != 0 ? BonePositions[0] : HeadPosition; }
 	uint32_t GetBoneCount() const { return BoneCount; }
 	const std::string& GetDebugBoneNames() const { return DebugBoneNames; }

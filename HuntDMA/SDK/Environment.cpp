@@ -3,6 +3,8 @@
 #include "WorldEntity.h"
 #include "Globals.h"
 #include "ConfigUtilities.h"
+#include <functional>
+#include <unordered_map>
 
 bool createEntitiesDump = false;
 bool successfullyInjected = false;
@@ -55,6 +57,8 @@ void Environment::GetEntities()
 	if (ObjectCount < 1000)
 	{
 		mapType = MapType::None;
+		TeamsAssigned = false;  // map gone — allow fresh team assignment next load
+		TeamCache.clear();      // forget old team assignments
 		if (mapLoaded)
 			mapLoaded = false;
 	}
@@ -874,6 +878,12 @@ void Environment::CacheEntities()
 		player->SetWeapons(w1, w2);
 	}
 
+	// Assign teams based on proximity:
+	//   first call (TeamsAssigned=false) → compute Union-Find + store in TeamCache
+	//   subsequent calls (TeamsAssigned=true) → reapply TeamCache to new WorldEntity objects
+	AssignTeams(templayerlist);
+	// Note: TeamsAssigned is set to true INSIDE AssignTeams() after successful first compute
+
 	std::swap(PlayerList, templayerlist);
 	std::swap(BossesList, tempbosseslist);
 	std::swap(SupplyList, tempsupplylist);
@@ -881,6 +891,96 @@ void Environment::CacheEntities()
 	std::swap(TrapList, temptraplist);
 	std::swap(POIList, temppoilist);
 	std::swap(TraitList, temptraitlist);
+}
+
+// ── Proximity-based team grouping (runs once per map load) ──────────────────
+// Groups HunterBasic players within 20 m of each other into teams.
+// Uses a greedy Union-Find approach:
+//   - TeamId == -1  → not yet assigned
+//   - TeamId == 0   → solo (no ally within 20 m)
+//   - TeamId >= 1   → team number
+void Environment::AssignTeams(std::vector<std::shared_ptr<WorldEntity>>& players)
+{
+	const float TEAM_RADIUS    = 20.0f;
+	const float TEAM_RADIUS_SQ = TEAM_RADIUS * TEAM_RADIUS;
+
+	// Collect living enemy/friendly hunters
+	std::vector<std::shared_ptr<WorldEntity>> hunters;
+	for (auto& ent : players)
+	{
+		if (!ent) continue;
+		EntityType t = ent->GetType();
+		if (t == EntityType::EnemyPlayer || t == EntityType::FriendlyPlayer)
+			hunters.push_back(ent);
+	}
+
+	const int N = (int)hunters.size();
+
+	if (TeamsAssigned)
+	{
+		// Map is still loading — CacheEntities created NEW WorldEntity objects.
+		// Reapply the previously computed teamIds from TeamCache.
+		for (auto& ent : hunters)
+		{
+			if (!ent) continue;
+			auto it = TeamCache.find(ent->GetClass());
+			if (it != TeamCache.end())
+				ent->SetTeamId(it->second);
+		}
+		return;
+	}
+
+	// ── First run: compute proximity groups ─────────────────────────────────
+	if (N == 0) return;  // entities not ready yet — retry next call
+
+	// Union-Find
+	std::vector<int> parent(N);
+	for (int i = 0; i < N; i++) parent[i] = i;
+	std::function<int(int)> find = [&](int x) -> int {
+		while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+		return x;
+	};
+	auto unite = [&](int a, int b) {
+		a = find(a); b = find(b);
+		if (a != b) parent[b] = a;
+	};
+
+	for (int i = 0; i < N; i++)
+	{
+		Vector3 pi = hunters[i]->GetPosition();
+		for (int j = i + 1; j < N; j++)
+		{
+			Vector3 pj = hunters[j]->GetPosition();
+			float dx = pi.x - pj.x, dy = pi.y - pj.y, dz = pi.z - pj.z;
+			if (dx*dx + dy*dy + dz*dz <= TEAM_RADIUS_SQ)
+				unite(i, j);
+		}
+	}
+
+	std::unordered_map<int, int> groupSize;
+	for (int i = 0; i < N; i++) groupSize[find(i)]++;
+
+	std::unordered_map<int, int> rootToTeam;
+	int nextTeam = 1;
+	for (int i = 0; i < N; i++)
+	{
+		int root = find(i);
+		int tid;
+		if (groupSize[root] <= 1)
+			tid = 0;
+		else
+		{
+			if (rootToTeam.find(root) == rootToTeam.end())
+				rootToTeam[root] = nextTeam++;
+			tid = rootToTeam[root];
+		}
+		hunters[i]->SetTeamId(tid);
+		TeamCache[hunters[i]->GetClass()] = tid;  // store for re-use when WorldEntity objects rebuild
+	}
+
+	// Mark done only when we actually assigned something
+	TeamsAssigned = true;
+	LOG_INFO(LIT("AssignTeams: %d hunters, %d teams"), N, nextTeam - 1);
 }
 
 void Environment::ClearConsole()

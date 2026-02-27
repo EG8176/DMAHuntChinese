@@ -19,6 +19,7 @@ private:
            // someone would post it here.
   const char *SystemGlobalEnvironmentSignature = "48 8B 05 ? ? ? ? 48 8B 88 B0";
   void FindSystemGlobalEnvironment();
+  void AssignTeams(std::vector<std::shared_ptr<WorldEntity>>& players);
 
   uint64_t EntitySystem = 0x0;
   const uint64_t EntitySystemOffset = 0xC0;
@@ -50,6 +51,8 @@ private:
   uint64_t LocalPlayer = 0x0;
 
   int SpectatorCount = 0;
+  bool TeamsAssigned = false;  // true once AssignTeams() has run for this map load
+  std::unordered_map<uint64_t, int> TeamCache; // entity class addr → teamId (persists across re-cache)
 
   std::vector<std::shared_ptr<WorldEntity>> PlayerList;
   std::vector<std::shared_ptr<WorldEntity>> BossesList;

@@ -643,6 +643,8 @@ void ImGuiMenu::RenderPlayerESPTab() {
         ImGui::Checkbox(LOC("menu", "players.HP").c_str(), &Configs.Player.HP);
         ImGui::SameLine();
         ImGui::Checkbox("Show Weapons", &Configs.Player.ShowWeapons);
+        ImGui::SameLine();
+        ImGui::Checkbox("Show Team", &Configs.Player.ShowTeam);
     }
 
     ImGui::Checkbox(LOC("menu", "players.ShowDead").c_str(), &Configs.Player.ShowDead);

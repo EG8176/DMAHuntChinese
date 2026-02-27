@@ -9,6 +9,8 @@
 #include "PlayerEsp.h"
 #include "globals.h"
 #include <algorithm>
+#include <functional>
+#include <unordered_map>
 
 static void DrawFPS() {
   ESPRenderer::DrawText(ImVec2(25, 25),
@@ -37,32 +39,30 @@ static void DrawPlayerList() {
   if (templist.empty())
     return;
 
-  std::vector<std::pair<int, std::string>> playerInfoList;
+  // ── Collect valid player info entries ────────────────────────────────────
+  struct PlayerEntry {
+    int distance;
+    int teamId;   // -1=unassigned, 0=solo, 1..N=team
+    bool isDead;
+    std::string info;
+  };
+  std::vector<PlayerEntry> entries;
 
   for (std::shared_ptr<WorldEntity> ent : templist) {
     if (!ent || ent->Render.Type == EntityType::FriendlyPlayer)
       continue;
-
     if (ent->Render.Type == EntityType::LocalPlayer || !ent->Render.Valid ||
         ent->Render.Hidden)
       continue;
-
-    // Skip Hunter_Loot entities — they have no HP chain and produce garbage
-    // HP values. They exist only for dead-body proximity detection in ESP.
     if (strstr(ent->GetEntityClassName().name, "Hunter_Loot"))
       continue;
 
-    // Determine dead status using same logic as ESP
     auto health = ent->Render.Health;
     bool isDead = (ent->Render.Type == EntityType::DeadPlayer);
-
-    // For HunterBasic: check HP-based death (same as ESP)
     if (strstr(ent->GetEntityClassName().name, "HunterBasic")) {
       if (health.current_hp == 0 && IsValidHP(health.current_max_hp))
         isDead = true;
     }
-
-    // Skip entities with invalid/garbage HP (failed HP chain read)
     if (!isDead && !IsValidHP(health.current_max_hp))
       continue;
 
@@ -74,35 +74,92 @@ static void DrawPlayerList() {
     std::string wdistance =
         Configs.Player.Distance ? "[" + std::to_string(distance) + "m]" : "";
 
-    // Sanitize HP for display: if dead and HP values are garbage, show 0
-    unsigned int displayHp = health.current_hp;
-    unsigned int displayMaxHp = health.current_max_hp;
-    unsigned int displayRegenHp = health.regenerable_max_hp;
+    unsigned int displayHp  = health.current_hp;
+    unsigned int displayMax = health.current_max_hp;
+    unsigned int displayReg = health.regenerable_max_hp;
     if (isDead && !IsValidHP(health.current_max_hp)) {
-      displayHp = 0;
-      displayMaxHp = 0;
-      displayRegenHp = 0;
+      displayHp = displayMax = displayReg = 0;
     }
+    std::string whealth = std::to_string(displayHp) + "/" +
+                          std::to_string(displayMax) + "[" +
+                          std::to_string(displayReg) + "]";
 
-    std::string whealth =
-        std::to_string(displayHp) + "/" +
-        std::to_string(displayMaxHp) + "[" +
-        std::to_string(displayRegenHp) + "]";
-
-    std::string playerInfo = wname + " " + whealth + " " + wdistance;
-
-    playerInfoList.push_back({distance, playerInfo});
+    entries.push_back({distance, ent->Render.TeamId, isDead,
+                       wname + " " + whealth + " " + wdistance});
   }
 
-  std::sort(playerInfoList.begin(), playerInfoList.end(),
-            [](const auto &a, const auto &b) { return a.first < b.first; });
+  if (entries.empty())
+    return;
 
+  // ── Build display string ──────────────────────────────────────────────────
   std::stringstream result;
-  result << "[" + std::to_string(playerInfoList.size()) + "]\n";
-  for (size_t i = 0; i < playerInfoList.size(); ++i) {
-    result << playerInfoList[i].second;
-    if (i != playerInfoList.size() - 1)
-      result << "\n";
+
+  if (!Configs.Player.ShowTeam) {
+    // ── Flat list sorted by distance (original behaviour) ──────────────────
+    std::sort(entries.begin(), entries.end(),
+              [](const PlayerEntry& a, const PlayerEntry& b) {
+                return a.distance < b.distance;
+              });
+    result << "[" << entries.size() << "]\n";
+    for (size_t i = 0; i < entries.size(); ++i) {
+      result << entries[i].info;
+      if (i != entries.size() - 1) result << "\n";
+    }
+  } else {
+    // ── Grouped by team ────────────────────────────────────────────────────
+    // Sort all entries: alive before dead, then by distance
+    std::sort(entries.begin(), entries.end(),
+              [](const PlayerEntry& a, const PlayerEntry& b) {
+                if (a.isDead != b.isDead) return !a.isDead; // alive first
+                return a.distance < b.distance;
+              });
+
+    // Gather unique teamIds in order of first (closest) appearance
+    std::vector<int> teamOrder;
+    std::unordered_map<int, std::vector<const PlayerEntry*>> groups;
+    for (const auto& e : entries) {
+      int tid = e.teamId;
+      if (groups.find(tid) == groups.end())
+        teamOrder.push_back(tid);
+      groups[tid].push_back(&e);
+    }
+
+    // Sort teamOrder: put solo (0) and unassigned (-1) last,
+    // teams sorted by their closest (alive) member distance
+    auto teamMinDist = [&](int tid) -> int {
+      int best = 99999;
+      for (auto* e : groups[tid])
+        if (!e->isDead && e->distance < best) best = e->distance;
+      return best;
+    };
+    std::sort(teamOrder.begin(), teamOrder.end(),
+              [&](int a, int b) {
+                bool aSpecial = (a <= 0), bSpecial = (b <= 0);
+                if (aSpecial != bSpecial) return !aSpecial; // real teams first
+                if (aSpecial && bSpecial) return a > b;     // solo(0) before unassigned(-1)
+                return teamMinDist(a) < teamMinDist(b);
+              });
+
+    int totalPlayers = (int)entries.size();
+    result << "[" << totalPlayers << "]\n";
+
+    bool firstGroup = true;
+    for (int tid : teamOrder) {
+      if (!firstGroup) result << "\n";
+      firstGroup = false;
+
+      // ── Team header ──────────────────────────────────────────────────────
+      if (tid > 0)
+        result << "-- Team " << tid << " (" << groups[tid].size() << ") --";
+      else if (tid == 0)
+        result << "-- Solo --";
+      else
+        result << "-- ? --";  // unassigned (shouldn't normally appear)
+
+      for (auto* e : groups[tid]) {
+        result << "\n" << e->info;
+      }
+    }
   }
 
   ESPRenderer::DrawText(ImVec2(25, y), result.str(),

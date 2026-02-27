@@ -455,11 +455,22 @@ void DrawPlayersEsp() {
           if (!ent->Render.WeaponName2.empty())
               wweapons += " | " + ent->Render.WeaponName2;
       }
+      std::string wteam;
+      if (Configs.Player.ShowTeam) {
+          int tid = ent->Render.TeamId;
+          if (tid > 0)
+              wteam = "[T" + std::to_string(tid) + "]";
+          else if (tid == 0)
+              wteam = "[Solo]";
+          // tid == -1 means unassigned (game not fully loaded) → show nothing
+      }
       std::string espText = wname + wdistance;
       if (!whealth.empty())
           espText += "\n" + whealth;
       if (!wweapons.empty())
           espText += "\n" + wweapons;
+      if (!wteam.empty())
+          espText += "\n" + wteam;
       ESPRenderer::DrawText(ImVec2(feetPos.x, feetPos.y),
                             espText,
                             ent->Render.Type == EntityType::FriendlyPlayer
