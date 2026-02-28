@@ -4,6 +4,7 @@
 #include "LocalizationData.h"
 #include "en.h"
 #include "ru.h"
+#include "zh.h"
 
 class Localization {
 private:
@@ -16,7 +17,8 @@ private:
 public:
     static inline std::map<std::string, LocalizationData> Languages = {
         {"en", Localizations::GetLocalization_EN()},
-        {"ru", Localizations::GetLocalization_RU()}
+        {"ru", Localizations::GetLocalization_RU()},
+        {"zh", Localizations::GetLocalization_ZH()}
     };
 
     static void Initialize();

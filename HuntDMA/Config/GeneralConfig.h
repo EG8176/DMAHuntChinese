@@ -18,7 +18,7 @@ public:
     float UIScale = (float)GetDpiForSystem() / (float)USER_DEFAULT_SCREEN_DPI;
     int OpenMenuKey = 36;
     bool CloseMenuOnEsc = true;
-    std::string Language = "en";
+    std::string Language = "zh";
 
     void ToJsonColor(json* j, const std::string& name, ImVec4* color)
     {
