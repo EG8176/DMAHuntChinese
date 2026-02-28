@@ -51,7 +51,7 @@ void InitializeESP()
 	// Only initialize KMBox for aimbot output (if aimbot is enabled)
 	if (enableAimBot)
 	{
-		kmbox::KmboxInitialize(Configs.Aimbot.KmboxPort, Configs.Aimbot.KmboxBaudRate, (kmbox::DeviceType)Configs.Aimbot.KmboxDeviceType);
+		kmbox::KmboxInitialize(Configs.Aimbot.KmboxPort);
 	}
 }
 

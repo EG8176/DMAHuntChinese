@@ -1306,40 +1306,12 @@ void ImGuiMenu::RenderAimbotTab() {
 
     ImGui::Separator();
 
-    // Device Type & Connection settings
+    // Device Connection settings (Makcu only via makcu-cpp library)
     ImGui::BeginGroup();
-    ImGui::Text("Device Connection");
+    ImGui::Text("Device Connection (Makcu)");
 
-    static const char* deviceTypes[] = {
-        "AutoDetect", "Makcu", "Standard KMBox", "Kmbox Net"
-    };
-    ImGui::Combo("Device Type", &Configs.Aimbot.KmboxDeviceType, deviceTypes, IM_ARRAYSIZE(deviceTypes));
-    ImGui::SameLine(); HelpMarker(
-        "AutoDetect: Tries Makcu first, then Standard KMBox\n"
-        "Makcu: Force Makcu mode (4MHz handshake)\n"
-        "Standard KMBox: Direct connection at configured baud rate\n"
-        "Kmbox Net: Connect via UDP network (IP/Port)\n\n"
-        "If you have a standard KMBox B/B+, select 'Standard KMBox'.\n"
-        "If unsure, use 'AutoDetect'."
-    );
-
-    if (Configs.Aimbot.KmboxDeviceType == 3) // Kmbox Net
+    // COM Port selection
     {
-        static char ipBuf[64];
-        if (ipBuf[0] == 0) strcpy_s(ipBuf, Configs.Aimbot.KmboxIP.c_str());
-        if (ImGui::InputText("IP Address", ipBuf, sizeof(ipBuf))) Configs.Aimbot.KmboxIP = ipBuf;
-
-        static char portBuf[16];
-        if (portBuf[0] == 0) strcpy_s(portBuf, Configs.Aimbot.KmboxNetPort.c_str());
-        if (ImGui::InputText("Port", portBuf, sizeof(portBuf))) Configs.Aimbot.KmboxNetPort = portBuf;
-
-        static char uuidBuf[64];
-        if (uuidBuf[0] == 0) strcpy_s(uuidBuf, Configs.Aimbot.KmboxUUID.c_str());
-        if (ImGui::InputText("UUID (Optional)", uuidBuf, sizeof(uuidBuf))) Configs.Aimbot.KmboxUUID = uuidBuf;
-    }
-    else
-    {
-        // COM Port selection
         static std::vector<kmbox::PortInfo> availablePorts;
         static int selectedPortIdx = 0; // 0 = Auto
 
@@ -1389,36 +1361,17 @@ void ImGuiMenu::RenderAimbotTab() {
         }
         ImGui::SameLine(); HelpMarker(
             "Click 'Scan Ports' to find available COM ports.\n"
-            "Select 'Auto' to let the program find the device,\n"
-            "or pick a specific port if you know which one your device is on."
-        );
-
-        // Baud Rate configuration
-        ImGui::InputInt("Baud Rate", &Configs.Aimbot.KmboxBaudRate);
-        ImGui::SameLine(); HelpMarker(
-            "Baud rate for Standard KMBox mode.\n"
-            "Default: 115200. Common values: 9600, 115200.\n"
-            "For Makcu devices, this is ignored (uses 4MHz)."
+            "Select 'Auto' to let the program find the Makcu device,\n"
+            "or pick a specific port if you know which one."
         );
     }
 
     if (ImGui::Button("Connect")) {
-        if (Configs.Aimbot.KmboxDeviceType == 3) {
-             kmbox::NetInitialize(Configs.Aimbot.KmboxIP, Configs.Aimbot.KmboxNetPort, Configs.Aimbot.KmboxUUID);
-        } else {
-             kmbox::KmboxInitialize(Configs.Aimbot.KmboxPort, Configs.Aimbot.KmboxBaudRate, (kmbox::DeviceType)Configs.Aimbot.KmboxDeviceType);
-        }
+        kmbox::KmboxInitialize(Configs.Aimbot.KmboxPort);
     }
     ImGui::SameLine();
     if (kmbox::connected) {
-        const char* detectedName = "Unknown";
-        switch (kmbox::detectedDevice) {
-            case kmbox::DeviceType::Makcu: detectedName = "Makcu (4MHz)"; break;
-            case kmbox::DeviceType::StandardKmbox: detectedName = "Standard KMBox"; break;
-            case kmbox::DeviceType::KmboxNet: detectedName = "Kmbox Net"; break;
-            default: detectedName = "Connected"; break;
-        }
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s on %s", detectedName, kmbox::connectedPort.c_str());
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Makcu (4MHz) on %s", kmbox::connectedPort.c_str());
     }
     else {
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Not Connected");

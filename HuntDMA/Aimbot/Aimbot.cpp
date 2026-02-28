@@ -51,6 +51,7 @@ struct BallisticCache
 	float   BulletSpeed = 500.0f;
 	float   Drag        = 0.0f;
 	float   DropMult    = 1.0f;
+	int     DropRange   = 150;  // distance below which drop = 0
 	bool    Valid       = false;
 };
 static BallisticCache gBallistic;
@@ -63,6 +64,7 @@ static void RefreshBallisticCache(int presetIndex)
 	gBallistic.BulletSpeed = Configs.Aimbot.BulletSpeed;
 	gBallistic.Drag        = 0.0f;
 	gBallistic.DropMult    = 1.0f;
+	gBallistic.DropRange   = 150;
 	gBallistic.Valid       = false;
 
 	if (presetIndex > 0)
@@ -79,8 +81,9 @@ static void RefreshBallisticCache(int presetIndex)
 			float actMult  = ActionMult[w.action];
 			float barMult  = barrelMult[w.slot];
 			float pre      = 1.0f + dropAdd + actMult + barMult;
-			gBallistic.DropMult = std::max(pre, 0.25f);
-			gBallistic.Valid    = true;
+			gBallistic.DropMult  = std::max(pre, 0.25f);
+			gBallistic.DropRange = w.dropRange;
+			gBallistic.Valid     = true;
 		}
 	}
 }
@@ -115,13 +118,18 @@ static Vector2 GetPredictedHeadScreenPosition(std::shared_ptr<WorldEntity> entit
 			float travelTime = distance / bulletSpeed;
 
 			// ── Movement lead ──────────────────────────────────────────────
-			float dragFactor = std::max(1.0f - drag * distance, 0.1f);
+			float dragFactor = std::max(1.0f - drag, 0.1f);
 			Vector3 offset   = entity->Velocity * (travelTime * Configs.Aimbot.PredictionScale * dragFactor);
 
 			// ── Bullet drop  s = 0.5 * g * t^2 * dropMult ────────────────
 			float gravity = 9.81f * Configs.Aimbot.GravityScale;
-			float drop    = 0.5f * gravity * travelTime * travelTime * dropMult;
-			offset.z     += drop;
+			float drop    = (0.5f * gravity * travelTime * travelTime) * dropMult;
+
+			// Extra drop at extreme range (300m+)
+			if (distance > 300.0f)
+				drop *= 1.3f;
+
+			offset.z += drop;
 
 			headPos = headPos + offset;
 		}

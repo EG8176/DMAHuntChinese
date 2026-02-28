@@ -222,7 +222,7 @@ void WorldEntity::UpdateBones()
 
 	// Map well-known bone names to indices
 	const char* boneNames[MAX_BONES] = {
-		"head", "neck", "pelvis",
+		"RT_lookIK", "neck", "pelvis",
 		"R_upperarm", "R_forearm", "R_hand", "R_thigh", "R_calf", "R_foot",
 		"L_upperarm", "L_forearm", "L_hand", "L_thigh", "L_calf", "L_foot"
 	};
@@ -358,9 +358,10 @@ void WorldEntity::UpdateVelocity()
 				Vector3 instantVelocity = positionDelta * (1.0f / deltaTime);
 				
 				float speed = instantVelocity.Length();
-				if (speed < 15.0f) // Filter teleportation / jitter
+				if (speed < 8.0f) // Hunt max sprint ~6 m/s; reject teleport/jitter above 8
 				{
-					Velocity = Vector3::Lerp(Velocity, instantVelocity, 0.85f);
+					// Smooth EMA — 0.4 = gentle adoption, avoids DMA timing noise 
+					Velocity = Vector3::Lerp(Velocity, instantVelocity, 0.4f);
 				}
 			}
 			
