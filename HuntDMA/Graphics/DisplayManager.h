@@ -31,7 +31,7 @@ public:
 	// Resolution presets
 	static void ApplyResolutionPreset(int presetIndex);
 	static const char* GetResolutionPresetName(int index);
-	static int GetResolutionPresetCount() { return 5; }
+	static int GetResolutionPresetCount() { return 6; }
 	static int GetCurrentResolutionPreset() { return m_CurrentResolutionPreset; }
 
 private:

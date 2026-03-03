@@ -1472,6 +1472,13 @@ void ImGuiMenu::RenderOverlayTab() {
     
     if (currentMonitor != prevMonitor) {
         DisplayManager::SetCurrentMonitor(currentMonitor);
+        HWND hWnd = (HWND)ImGui::GetMainViewport()->PlatformHandle;
+        if (hWnd) {
+            SetWindowPos(hWnd, HWND_TOPMOST,
+                DisplayManager::GetMonitorX(), DisplayManager::GetMonitorY(),
+                (int)DisplayManager::ScreenWidth, (int)DisplayManager::ScreenHeight,
+                SWP_NOACTIVATE);
+        }
     }
     
     int prevPreset = DisplayManager::GetCurrentResolutionPreset();
@@ -1492,7 +1499,10 @@ void ImGuiMenu::RenderOverlayTab() {
         DisplayManager::ApplyResolutionPreset(currentPreset);
         HWND hWnd = (HWND)ImGui::GetMainViewport()->PlatformHandle;
         if (hWnd) {
-            SetWindowPos(hWnd, nullptr, 0, 0, (int)DisplayManager::ScreenWidth, (int)DisplayManager::ScreenHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+            SetWindowPos(hWnd, HWND_TOPMOST,
+                DisplayManager::GetMonitorX(), DisplayManager::GetMonitorY(),
+                (int)DisplayManager::ScreenWidth, (int)DisplayManager::ScreenHeight,
+                SWP_NOACTIVATE);
         }
     }
     

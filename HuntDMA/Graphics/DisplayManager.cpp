@@ -91,23 +91,30 @@ void DisplayManager::ApplyResolutionPreset(int presetIndex)
 
 	switch (presetIndex)
 	{
-	case 0: // 1920x1080
+	case 0: // Use Monitor Resolution (auto)
+	{
+		const auto& mon = m_Monitors[m_CurrentMonitor >= 0 ? m_CurrentMonitor : 0];
+		ScreenWidth  = static_cast<float>(mon.width);
+		ScreenHeight = static_cast<float>(mon.height);
+		break;
+	}
+	case 1: // 1920x1080
 		ScreenWidth = 1920.0f;
 		ScreenHeight = 1080.0f;
 		break;
-	case 1: // 2560x1440
+	case 2: // 2560x1440
 		ScreenWidth = 2560.0f;
 		ScreenHeight = 1440.0f;
 		break;
-	case 2: // 3440x1440 (Ultrawide)
+	case 3: // 3440x1440 (Ultrawide)
 		ScreenWidth = 3440.0f;
 		ScreenHeight = 1440.0f;
 		break;
-	case 3: // 3840x2160 (4K)
+	case 4: // 3840x2160 (4K)
 		ScreenWidth = 3840.0f;
 		ScreenHeight = 2160.0f;
 		break;
-	case 4: // Custom (do nothing, user will set manually)
+	case 5: // Custom (do nothing, user will set manually)
 		break;
 	}
 
@@ -117,6 +124,7 @@ void DisplayManager::ApplyResolutionPreset(int presetIndex)
 const char* DisplayManager::GetResolutionPresetName(int index)
 {
 	static const char* presets[] = {
+		"Use Monitor Resolution",
 		"1920x1080 (Full HD)",
 		"2560x1440 (QHD)",
 		"3440x1440 (Ultrawide)",
@@ -124,7 +132,7 @@ const char* DisplayManager::GetResolutionPresetName(int index)
 		"Custom"
 	};
 
-	if (index < 0 || index >= 5)
+	if (index < 0 || index >= 6)
 		return "Unknown";
 
 	return presets[index];
