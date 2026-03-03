@@ -16,6 +16,8 @@ public:
     ImVec4 TextColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
     int FontSize = 13;
     int ToggleKey = 0;
+    bool Chams = false;
+    int ChamMode = 2;  // default Outline Yellow (same index as players)
 
     void ToJsonColor(json* j, const std::string& name, ImVec4* color)
     {
@@ -45,6 +47,7 @@ public:
         j[ConfigName][LIT("MaxDistance")] = MaxDistance;
         j[ConfigName][LIT("FontSize")] = FontSize;
         j[ConfigName][LIT("ToggleKey")] = ToggleKey;
+        j[ConfigName][LIT("ChamMode")] = ChamMode;
         ToJsonColor(&j, LIT("TextColor"), &TextColor);
 
         return j;
@@ -65,6 +68,8 @@ public:
             MaxDistance = j[ConfigName][LIT("MaxDistance")];
         if (j[ConfigName].contains(LIT("ToggleKey")))
             ToggleKey = j[ConfigName][LIT("ToggleKey")];
+        if (j[ConfigName].contains(LIT("ChamMode")))
+            ChamMode = j[ConfigName][LIT("ChamMode")];
         FromJsonColor(j, LIT("TextColor"), &TextColor);
     }
 };

@@ -474,145 +474,255 @@ bool ImGuiMenu::HotKey(const char* label, int* key) {
 void ImGuiMenu::SetupTheme() {
     ImGuiStyle& style = ImGui::GetStyle();
 
-    // Colors
+    // --- Premium Dark "Hunt" Theme ---
+    // Base palette: deep charcoal background, warm amber/gold accent
+    const ImVec4 COL_BG_DEEP      = ImVec4(0.086f, 0.075f, 0.059f, 1.000f); // #161310
+    const ImVec4 COL_BG_MID       = ImVec4(0.118f, 0.102f, 0.082f, 1.000f); // #1E1A15
+    const ImVec4 COL_BG_PANEL     = ImVec4(0.153f, 0.133f, 0.106f, 1.000f); // #27221B
+    const ImVec4 COL_BG_WIDGET    = ImVec4(0.192f, 0.169f, 0.133f, 1.000f); // #312B22
+    const ImVec4 COL_BG_HOVER     = ImVec4(0.247f, 0.216f, 0.169f, 1.000f); // #3F372B
+    const ImVec4 COL_BG_ACTIVE    = ImVec4(0.310f, 0.271f, 0.212f, 1.000f); // #4F4536
+    const ImVec4 COL_BORDER       = ImVec4(0.294f, 0.243f, 0.180f, 0.700f); // #4B3E2E B0
+    const ImVec4 COL_ACCENT       = ImVec4(0.831f, 0.565f, 0.157f, 1.000f); // #D49028 - amber gold
+    const ImVec4 COL_ACCENT_DIM   = ImVec4(0.600f, 0.400f, 0.100f, 1.000f); // dimmed amber
+    const ImVec4 COL_ACCENT_HOVER = ImVec4(1.000f, 0.710f, 0.259f, 1.000f); // bright amber hover
+    const ImVec4 COL_TEXT         = ImVec4(0.925f, 0.878f, 0.800f, 1.000f); // warm white
+    const ImVec4 COL_TEXT_DIM     = ImVec4(0.553f, 0.510f, 0.447f, 1.000f); // muted warm grey
+    const ImVec4 COL_SEP          = ImVec4(0.294f, 0.243f, 0.180f, 0.900f);
+
     ImVec4* colors = style.Colors;
-    colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-    colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
-    colors[ImGuiCol_ChildBg] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
-    colors[ImGuiCol_PopupBg] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
-    colors[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
-    colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[ImGuiCol_FrameBg] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-    colors[ImGuiCol_FrameBgHovered] = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
-    colors[ImGuiCol_FrameBgActive] = ImVec4(0.67f, 0.67f, 0.67f, 0.39f);
-    colors[ImGuiCol_TitleBg] = ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
-    colors[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
-    colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
-    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
-    colors[ImGuiCol_CheckMark] = ImVec4(0.11f, 0.64f, 0.92f, 1.00f);
-    colors[ImGuiCol_SliderGrab] = ImVec4(0.11f, 0.64f, 0.92f, 1.00f);
-    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.08f, 0.50f, 0.72f, 1.00f);
-    colors[ImGuiCol_Button] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-    colors[ImGuiCol_ButtonHovered] = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
-    colors[ImGuiCol_ButtonActive] = ImVec4(0.67f, 0.67f, 0.67f, 0.39f);
-    colors[ImGuiCol_Header] = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
-    colors[ImGuiCol_HeaderHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-    colors[ImGuiCol_HeaderActive] = ImVec4(0.67f, 0.67f, 0.67f, 0.39f);
-    colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.41f, 0.42f, 0.44f, 1.00f);
-    colors[ImGuiCol_SeparatorActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-    colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.29f, 0.30f, 0.31f, 0.67f);
-    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-    colors[ImGuiCol_Tab] = ImVec4(0.08f, 0.08f, 0.09f, 0.83f);
-    colors[ImGuiCol_TabHovered] = ImVec4(0.33f, 0.34f, 0.36f, 0.83f);
-    colors[ImGuiCol_TabActive] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
-    colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
-    colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-    colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
-    colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-    colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
-    colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-    colors[ImGuiCol_DragDropTarget] = ImVec4(0.11f, 0.64f, 0.92f, 1.00f);
-    colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_Text]                  = COL_TEXT;
+    colors[ImGuiCol_TextDisabled]          = COL_TEXT_DIM;
+    colors[ImGuiCol_WindowBg]              = COL_BG_DEEP;
+    colors[ImGuiCol_ChildBg]               = COL_BG_MID;
+    colors[ImGuiCol_PopupBg]               = COL_BG_PANEL;
+    colors[ImGuiCol_Border]                = COL_BORDER;
+    colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.40f);
+    colors[ImGuiCol_FrameBg]               = COL_BG_WIDGET;
+    colors[ImGuiCol_FrameBgHovered]        = COL_BG_HOVER;
+    colors[ImGuiCol_FrameBgActive]         = COL_BG_ACTIVE;
+    colors[ImGuiCol_TitleBg]               = COL_BG_DEEP;
+    colors[ImGuiCol_TitleBgActive]         = COL_BG_DEEP;
+    colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.05f, 0.04f, 0.03f, 0.90f);
+    colors[ImGuiCol_MenuBarBg]             = COL_BG_MID;
+    colors[ImGuiCol_ScrollbarBg]           = COL_BG_DEEP;
+    colors[ImGuiCol_ScrollbarGrab]         = COL_BG_ACTIVE;
+    colors[ImGuiCol_ScrollbarGrabHovered]  = COL_ACCENT_DIM;
+    colors[ImGuiCol_ScrollbarGrabActive]   = COL_ACCENT;
+    colors[ImGuiCol_CheckMark]             = COL_ACCENT;
+    colors[ImGuiCol_SliderGrab]            = COL_ACCENT;
+    colors[ImGuiCol_SliderGrabActive]      = COL_ACCENT_HOVER;
+    colors[ImGuiCol_Button]                = COL_BG_WIDGET;
+    colors[ImGuiCol_ButtonHovered]         = COL_BG_HOVER;
+    colors[ImGuiCol_ButtonActive]          = COL_BG_ACTIVE;
+    colors[ImGuiCol_Header]                = COL_BG_PANEL;
+    colors[ImGuiCol_HeaderHovered]         = COL_BG_HOVER;
+    colors[ImGuiCol_HeaderActive]          = COL_BG_ACTIVE;
+    colors[ImGuiCol_Separator]             = COL_SEP;
+    colors[ImGuiCol_SeparatorHovered]      = COL_ACCENT_DIM;
+    colors[ImGuiCol_SeparatorActive]       = COL_ACCENT;
+    colors[ImGuiCol_ResizeGrip]            = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_ResizeGripHovered]     = COL_ACCENT_DIM;
+    colors[ImGuiCol_ResizeGripActive]      = COL_ACCENT;
+    colors[ImGuiCol_Tab]                   = COL_BG_DEEP;
+    colors[ImGuiCol_TabHovered]            = COL_BG_HOVER;
+    colors[ImGuiCol_TabActive]             = COL_BG_PANEL;
+    colors[ImGuiCol_TabUnfocused]          = COL_BG_DEEP;
+    colors[ImGuiCol_TabUnfocusedActive]    = COL_BG_MID;
+    colors[ImGuiCol_PlotLines]             = COL_ACCENT_DIM;
+    colors[ImGuiCol_PlotLinesHovered]      = COL_ACCENT_HOVER;
+    colors[ImGuiCol_PlotHistogram]         = COL_ACCENT;
+    colors[ImGuiCol_PlotHistogramHovered]  = COL_ACCENT_HOVER;
+    colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.831f, 0.565f, 0.157f, 0.30f);
+    colors[ImGuiCol_DragDropTarget]        = COL_ACCENT_HOVER;
+    colors[ImGuiCol_NavHighlight]          = COL_ACCENT;
+    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 0.90f, 0.70f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg]     = ImVec4(0.10f, 0.08f, 0.06f, 0.40f);
+    colors[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.05f, 0.04f, 0.03f, 0.55f);
 
-    // Style
-    style.WindowPadding = ImVec2(8, 8);
-    style.FramePadding = ImVec2(4, 3);
-    style.CellPadding = ImVec2(4, 2);
-    style.ItemSpacing = ImVec2(8, 4);
-    style.ItemInnerSpacing = ImVec2(4, 4);
-    style.TouchExtraPadding = ImVec2(0, 0);
-    style.IndentSpacing = 21;
-    style.ScrollbarSize = 14;
-    style.GrabMinSize = 10;
+    // --- Spacing & Sizing ---
+    style.WindowPadding        = ImVec2(10, 10);
+    style.FramePadding         = ImVec2(6, 4);
+    style.CellPadding          = ImVec2(6, 3);
+    style.ItemSpacing          = ImVec2(8, 6);
+    style.ItemInnerSpacing     = ImVec2(6, 4);
+    style.TouchExtraPadding    = ImVec2(0, 0);
+    style.IndentSpacing        = 20;
+    style.ScrollbarSize        = 12;
+    style.GrabMinSize          = 10;
 
-    style.WindowBorderSize = 1;
-    style.ChildBorderSize = 1;
-    style.PopupBorderSize = 1;
-    style.FrameBorderSize = 1;
-    style.TabBorderSize = 0;
+    // --- Borders ---
+    style.WindowBorderSize     = 1;
+    style.ChildBorderSize      = 1;
+    style.PopupBorderSize      = 1;
+    style.FrameBorderSize      = 0;
+    style.TabBorderSize        = 0;
 
-    style.WindowRounding = 4;
-    style.ChildRounding = 4;
-    style.FrameRounding = 3;
-    style.PopupRounding = 4;
-    style.ScrollbarRounding = 9;
-    style.GrabRounding = 3;
-    style.LogSliderDeadzone = 4;
-    style.TabRounding = 4;
+    // --- Rounding (softer/more modern) ---
+    style.WindowRounding       = 8;
+    style.ChildRounding        = 6;
+    style.FrameRounding        = 5;
+    style.PopupRounding        = 6;
+    style.ScrollbarRounding    = 10;
+    style.GrabRounding         = 4;
+    style.LogSliderDeadzone    = 4;
+    style.TabRounding          = 6;
 
     style.ScaleAllSizes(Configs.General.UIScale);
+}
+
+// Helper: Styled section header with amber left-accent bar
+static void SectionHeader(const char* label) {
+    ImGui::Spacing();
+    ImDrawList* draw = ImGui::GetWindowDrawList();
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    float barW = 3.0f;
+    float textH = ImGui::GetTextLineHeight();
+    // Amber left accent bar
+    draw->AddRectFilled(
+        ImVec2(p.x, p.y),
+        ImVec2(p.x + barW, p.y + textH),
+        IM_COL32(212, 144, 40, 255)
+    );
+    ImGui::SetCursorScreenPos(ImVec2(p.x + barW + 6.0f, p.y));
+    ImGui::TextColored(ImVec4(0.92f, 0.75f, 0.40f, 1.00f), "%s", label);
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
 }
 
 void ImGuiMenu::RenderMenu() {
     if (!MenuOpen)
         return;
 
-    // Set default window position and size on first use
-    ImGui::SetNextWindowPos(ImVec2(190, 102), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(580, 362), ImGuiCond_FirstUseEver);
+    // Track the currently selected sidebar tab (persistent across frames)
+    static int selectedTab = 0;
 
-    ImGui::Begin(LOC("menu", "window.name").c_str(), &MenuOpen, ImGuiWindowFlags_NoCollapse);
+    ImGui::SetNextWindowPos(ImVec2(170, 90), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(660, 440), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSizeConstraints(ImVec2(500, 300), ImVec2(FLT_MAX, FLT_MAX));
 
-    if (ImGui::BeginTabBar("##Tabs")) {
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.PlayerESP").c_str())) {
-            RenderPlayerESPTab();
-            ImGui::EndTabItem();
+    // Push a deep charcoal window background
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.086f, 0.075f, 0.059f, 1.00f));
+    ImGui::Begin(LOC("menu", "window.name").c_str(), &MenuOpen,
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::PopStyleColor();
+
+    const float SIDEBAR_W = 130.0f * Configs.General.UIScale;
+    const float totalH    = ImGui::GetContentRegionAvail().y;
+
+    // ── Sidebar nav panel ────────────────────────────────────────────────────
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.066f, 0.055f, 0.043f, 1.00f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 6));
+    ImGui::BeginChild("##Sidebar", ImVec2(SIDEBAR_W, totalH), false,
+        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::PopStyleVar();
+
+    // Build nav entries: { label, visible }
+    struct NavEntry { const char* label; bool visible; };
+    NavEntry navItems[] = {
+        { "Players",     true },
+        { "Bosses & AI", true },
+        { "World Items", true },
+        { "Traits",      true },
+        { "Overlay",     true },
+        { "Aimbot",      enableAimBot },
+        { "Settings",    true },
+    };
+    constexpr int NAV_COUNT = IM_ARRAYSIZE(navItems);
+
+    // Clamp selection if aimbot tab is hidden
+    if (!enableAimBot && selectedTab == 5)
+        selectedTab = 0;
+
+    const ImVec4 ACCENT     = ImVec4(0.831f, 0.565f, 0.157f, 1.00f);
+    const ImVec4 ACCENT_DIM = ImVec4(0.600f, 0.400f, 0.100f, 0.60f);
+    const ImVec4 TEXT_DIM   = ImVec4(0.553f, 0.510f, 0.447f, 1.00f);
+
+    // Small top title / logo area
+    ImGui::Spacing();
+    ImGui::SetCursorPosX(8);
+    ImGui::TextColored(ACCENT, "[ HUNT DMA ]");
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    int visIdx = 0;
+    for (int i = 0; i < NAV_COUNT; i++)
+    {
+        if (!navItems[i].visible) continue;
+        bool isActive = (selectedTab == i);
+
+        // Draw amber left accent bar BEFORE selectable (so it's underneath)
+        if (isActive) {
+            ImDrawList* dl = ImGui::GetWindowDrawList();
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            float lineH = ImGui::GetTextLineHeightWithSpacing() + 6.0f;
+            dl->AddRectFilled(ImVec2(p.x, p.y), ImVec2(p.x + 3.0f, p.y + lineH),
+                IM_COL32(212, 144, 40, 255));
         }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.BossesESP").c_str())) {
-            RenderBossesESPTab();
-            ImGui::EndTabItem();
+
+        // Push colors for the selectable
+        if (isActive) {
+            ImGui::PushStyleColor(ImGuiCol_Header,        ImVec4(0.200f, 0.160f, 0.090f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.250f, 0.200f, 0.115f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive,  ImVec4(0.220f, 0.175f, 0.100f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_Text,          ACCENT);
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Text,          TEXT_DIM);
         }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.SupplyESP").c_str())) {
-            RenderSupplyESPTab();
-            ImGui::EndTabItem();
+
+        ImGui::SetCursorPosX(isActive ? 9.0f : 7.0f);
+        char selId[128];
+        snprintf(selId, sizeof(selId), "%s##nav_%d", navItems[i].label, i);
+        if (ImGui::Selectable(selId, isActive, ImGuiSelectableFlags_None,
+            ImVec2(SIDEBAR_W - (isActive ? 9.0f : 7.0f), ImGui::GetTextLineHeightWithSpacing() + 6.0f)))
+        {
+            selectedTab = i;
         }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.BBESP").c_str())) {
-            RenderBloodBondsESPTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.TrapESP").c_str())) {
-            RenderTrapESPTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.POIESP").c_str())) {
-            RenderPOIESPTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.TraitESP").c_str())) {
-            RenderTraitESPTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.Overlay").c_str())) {
-            RenderOverlayTab();
-            ImGui::EndTabItem();
-        }
-        if (enableAimBot && ImGui::BeginTabItem(LOC("menu", "tabs.Aimbot").c_str())) {
-            RenderAimbotTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.Settings").c_str())) {
-            RenderSettingsTab();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem(LOC("menu", "tabs.Hotkeys").c_str())) {
-            RenderHotkeysTab();
-            ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
+
+        ImGui::PopStyleColor(isActive ? 4 : 1);
+
+        ImGui::Spacing();
+        visIdx++;
     }
 
-    // Check if mouse clicked outside window
+    ImGui::EndChild();
+    ImGui::PopStyleColor(); // sidebar bg
+
+    // Vertical divider line
+    ImGui::SameLine(0, 0);
+    {
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        dl->AddLine(ImVec2(p.x, p.y), ImVec2(p.x, p.y + totalH),
+            IM_COL32(74, 62, 42, 200), 1.0f);
+    }
+    ImGui::SameLine(0, 1);
+
+    // ── Main content panel ───────────────────────────────────────────────────
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.100f, 0.086f, 0.067f, 1.00f));
+    ImGui::BeginChild("##ContentPanel", ImVec2(0, totalH), false);
+    ImGui::PopStyleColor();
+
+    // Add consistent left + top padding inside the content panel
+    ImGui::SetCursorPos(ImVec2(14.0f, 10.0f));
+    ImGui::BeginGroup();
+
+    switch (selectedTab) {
+    case 0: RenderPlayerESPTab();   break;
+    case 1: RenderBossesESPTab();   break;
+    case 2: RenderWorldItemsTab();  break;
+    case 3: RenderTraitESPTab();    break;
+    case 4: RenderOverlayTab();     break;
+    case 5: if (enableAimBot) RenderAimbotTab(); break;
+    case 6: RenderSettingsTab();    break;
+    }
+
+    ImGui::EndGroup();
+    ImGui::EndChild();
+
+    // Close on outside click (OverlayMode)
     if (Configs.General.OverlayMode)
     {
         if (ImGui::IsMouseClicked(0) &&
@@ -625,124 +735,417 @@ void ImGuiMenu::RenderMenu() {
     ImGui::End();
 }
 
+// ── Card section helpers ──────────────────────────────────────────────────
+static int g_cardId = 0;
+static void BeginCard() {
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.075f, 0.060f, 0.042f, 1.f));
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 6.f);
+    char id[32]; snprintf(id, sizeof(id), "##card%d", g_cardId++);
+    ImGui::BeginChild(id, ImVec2(-1.f, 0.f),
+        ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar();
+    ImGui::Spacing();
+    ImGui::Indent(10.f);
+}
+static void EndCard() {
+    ImGui::Unindent(10.f);
+    ImGui::Spacing();
+    ImGui::EndChild();
+    ImGui::Spacing();
+}
+
 void ImGuiMenu::RenderPlayerESPTab() {
+    g_cardId = 100; // unique range for this tab
     ImGui::BeginChild("PlayerESPTab", ImVec2(0, 0), false);
+    SectionHeader("Players ESP");
 
-    ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Player.Enable);
-    ImGui::SameLine();
-    ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.Player.TextColor);
+    // ── General card ─────────────────────────────────────────────────────
+    BeginCard();
 
-    ImGui::SliderInt(LOC("menu", "general.MaxDistance").c_str(), &Configs.Player.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    // Row 1: Enable + Text Color
+    ImGui::Checkbox("Enable##pl", &Configs.Player.Enable);
+    ColorPickerWithText("Text Color", &Configs.Player.TextColor);
 
-    if (Configs.Player.Enable)
-    {
-        ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.Player.Name);
-        ImGui::SameLine();
-        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Player.Distance);
-        ImGui::SameLine();
-        ImGui::Checkbox(LOC("menu", "players.HP").c_str(), &Configs.Player.HP);
-        ImGui::SameLine();
-        ImGui::Checkbox("Show Weapons", &Configs.Player.ShowWeapons);
-        ImGui::SameLine();
-        ImGui::Checkbox("Show Team", &Configs.Player.ShowTeam);
+    // Row 2: Max Distance slider
+    ImGui::SetNextItemWidth(-1);
+    ImGui::SliderInt("##plMaxDist", &Configs.Player.MaxDistance, 0, 1500,
+        "Max Distance: %d m");
+
+    ImGui::Spacing();
+
+    // Row 3: Display flags in 2-col table
+    if (Configs.Player.Enable) {
+        if (ImGui::BeginTable("##plFlags", 3, ImGuiTableFlags_SizingFixedFit)) {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn(); ImGui::Checkbox("Name",         &Configs.Player.Name);
+            ImGui::TableNextColumn(); ImGui::Checkbox("Distance",     &Configs.Player.Distance);
+            ImGui::TableNextColumn(); ImGui::Checkbox("HP",           &Configs.Player.HP);
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn(); ImGui::Checkbox("Show Weapons", &Configs.Player.ShowWeapons);
+            ImGui::TableNextColumn(); ImGui::Checkbox("Show Team",    &Configs.Player.ShowTeam);
+            ImGui::TableNextColumn(); ImGui::Checkbox("Show Dead",    &Configs.Player.ShowDead);
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn(); ImGui::Checkbox("Friendly HP",  &Configs.Player.DrawFriendsHP);
+            ImGui::EndTable();
+        }
+        ImGui::Spacing();
+        ImGui::SetNextItemWidth(-80.f);
+        ImGui::SliderInt("Dead Max##plDead", &Configs.Player.DeadMaxDistance, 0, 1500, "%d m");
+        ImGui::Spacing();
+        RenderFontSizeSlider("Text Size##pl", Configs.Player.FontSize);
     }
 
-    ImGui::Checkbox(LOC("menu", "players.ShowDead").c_str(), &Configs.Player.ShowDead);
-    ImGui::SliderInt(LOC("menu", "players.DeadMaxDistance").c_str(), &Configs.Player.DeadMaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    EndCard();
 
-    if (Configs.Player.Enable)
-    {
-        ImGui::Checkbox(LOC("menu", "players.DrawFriendlyHP").c_str(), &Configs.Player.DrawFriendsHP);
-        //ImGui::SameLine();
-        //ColorPickerWithText(LOC("menu", "players.FriendColor").c_str(), &Configs.Player.FriendColor);
-    }
-
-    if (Configs.Player.Enable)
-        RenderFontSizeSlider(LOC("menu", "general.TextSize").c_str(), Configs.Player.FontSize);
-
-    ImGui::Separator();
+    // ── Chams card ───────────────────────────────────────────────────────
+    SectionHeader("Chams");
+    BeginCard();
 
     std::vector<std::string> chamModes = {
-        LOC("menu", "chams.OutlineRed"), LOC("menu", "chams.OutlineBlue"), LOC("menu", "chams.OutlineYellow"),
-        LOC("menu", "chams.OutlineOrange"), LOC("menu", "chams.OutlineCyan"), LOC("menu", "chams.OutlineMagenta"),
-        LOC("menu", "chams.OutlineWhite"), LOC("menu", "chams.FilledRed"), LOC("menu", "chams.FilledBlue"),
-        LOC("menu", "chams.FilledYellow"), LOC("menu", "chams.FilledOrange"), LOC("menu", "chams.FilledCyan"),
-        LOC("menu", "chams.FilledMagenta"), LOC("menu", "chams.FilledWhite")
+        LOC("menu","chams.OutlineRed"),   LOC("menu","chams.OutlineBlue"),
+        LOC("menu","chams.OutlineYellow"),LOC("menu","chams.OutlineOrange"),
+        LOC("menu","chams.OutlineCyan"),  LOC("menu","chams.OutlineMagenta"),
+        LOC("menu","chams.OutlineWhite"), LOC("menu","chams.FilledRed"),
+        LOC("menu","chams.FilledBlue"),   LOC("menu","chams.FilledYellow"),
+        LOC("menu","chams.FilledOrange"), LOC("menu","chams.FilledCyan"),
+        LOC("menu","chams.FilledMagenta"),LOC("menu","chams.FilledWhite")
     };
-    if (ImGui::BeginCombo(LOC("menu", "players.ChamMode").c_str(), chamModes[Configs.Player.ChamMode].c_str())) {
-        for (int n = 0; n < chamModes.size(); n++) {
-            bool is_selected = (Configs.Player.ChamMode == n);
-            if (ImGui::Selectable(chamModes[n].c_str(), is_selected))
-                Configs.Player.ChamMode = n;
-            if (is_selected)
-                ImGui::SetItemDefaultFocus();
+    ImGui::SetNextItemWidth(-1);
+    if (ImGui::BeginCombo("##chamMode", chamModes[Configs.Player.ChamMode].c_str())) {
+        for (int n = 0; n < (int)chamModes.size(); n++) {
+            bool sel = (Configs.Player.ChamMode == n);
+            if (ImGui::Selectable(chamModes[n].c_str(), sel)) Configs.Player.ChamMode = n;
+            if (sel) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
     }
+    ImGui::Spacing();
+    ImGui::Checkbox("Enable Player Chams##pl", &Configs.Player.Chams);
 
-    if (ImGui::Button(LOC("menu", "players.WriteChams").c_str())) {
-        Configs.Player.Chams = true;
-    }
+    EndCard();
 
-    ImGui::Separator();
+    // ── Visual Overlays card ─────────────────────────────────────────────
+    SectionHeader("Visual Overlays");
+    BeginCard();
 
-    // Box Type combo (None / Corner / Full)
-    {
+    // Box mode row
+    if (ImGui::BeginTable("##plBox", 2, ImGuiTableFlags_SizingFixedFit)) {
+        ImGui::TableNextColumn();
         static const char* boxModes[] = { "None", "Corner", "Full" };
-        ImGui::Combo("Draw Box", &Configs.Player.BoxType, boxModes, IM_ARRAYSIZE(boxModes));
-        ImGui::SameLine();
-        ColorPickerWithText(LOC("menu", "players.FramesColor").c_str(), &Configs.Player.FramesColor);
+        ImGui::SetNextItemWidth(130.f);
+        ImGui::Combo("##plBoxType", &Configs.Player.BoxType, boxModes, IM_ARRAYSIZE(boxModes));
+        ImGui::TableNextColumn();
+        ImGui::Text("Box  ");
+        ColorPickerWithText("Frames Color", &Configs.Player.FramesColor);
+        ImGui::EndTable();
     }
 
-    // Draw Head (independent of box)
-    ImGui::Checkbox("Draw Head", &Configs.Player.DrawHead);
-    if (Configs.Player.DrawHead)
-    {
-        ImGui::SliderFloat(LOC("menu", "players.HeadCircleSize").c_str(), &Configs.Player.HeadCircleSize, 1.0f, 10.0f, "%.1f");
+    ImGui::Spacing();
+
+    // Visual option checkboxes in 2-col table
+    if (ImGui::BeginTable("##plVis", 2, ImGuiTableFlags_SizingStretchSame)) {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Draw Head",          &Configs.Player.DrawHead);
+        ImGui::TableNextColumn();
+        if (Configs.Player.DrawHead) {
+            ImGui::SetNextItemWidth(-1);
+            ImGui::SliderFloat("##plHead", &Configs.Player.HeadCircleSize, 1.f, 10.f, "Size %.1f");
+        }
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Health Bars",        &Configs.Player.DrawHealthBars);
+        ImGui::TableNextColumn(); ImGui::Checkbox("Snaplines",          &Configs.Player.Snaplines);
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Bones (Skeleton)",   &Configs.Player.DrawBones);
+        ImGui::TableNextColumn();
+        if (Configs.Player.DrawBones) ColorPickerWithText("Bones Color##pl", &Configs.Player.BonesColor);
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Friend Bones",       &Configs.Player.DrawBonesFriend);
+        ImGui::TableNextColumn();
+        if (Configs.Player.DrawBonesFriend) ColorPickerWithText("Friend Color##pl", &Configs.Player.FriendBonesColor);
+        ImGui::EndTable();
     }
 
-    if (Configs.Player.Enable || Configs.Player.BoxType > 0)
-        ImGui::Checkbox(LOC("menu", "players.DrawHealth").c_str(), &Configs.Player.DrawHealthBars);
-
-    ImGui::Checkbox(LOC("menu", "players.Snaplines").c_str(), &Configs.Player.Snaplines);
-
-    ImGui::Checkbox("Draw Bones (Skeleton)", &Configs.Player.DrawBones);
-    if (Configs.Player.DrawBones)
-    {
-        ImGui::SameLine();
-        ColorPickerWithText("Bones Color", &Configs.Player.BonesColor);
-    }
-
-    ImGui::Checkbox("Draw Friend Bones", &Configs.Player.DrawBonesFriend);
-    if (Configs.Player.DrawBonesFriend)
-    {
-        ImGui::SameLine();
-        ColorPickerWithText("Friend Bones Color", &Configs.Player.FriendBonesColor);
-    }
+    EndCard();
 
     ImGui::EndChild();
 }
 
 void ImGuiMenu::RenderBossesESPTab() {
+    g_cardId = 200;
     ImGui::BeginChild("BossesESPTab", ImVec2(0, 0), false);
+    SectionHeader("Bosses ESP");
 
-    ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Bosses.Enable);
-    ImGui::SameLine();
-    ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.Bosses.TextColor);
+    // ── Bosses general card ───────────────────────────────────────────────
+    BeginCard();
 
-    ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.Bosses.Name);
-    ImGui::SameLine();
-    ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Bosses.Distance);
+    ImGui::Checkbox("Enable##boss", &Configs.Bosses.Enable);
+    ColorPickerWithText("Text Color", &Configs.Bosses.TextColor);
 
-    ImGui::SliderInt(LOC("menu", "general.MaxDistance").c_str(), &Configs.Bosses.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-    RenderFontSizeSlider(LOC("menu", "general.TextSize").c_str(), Configs.Bosses.FontSize);
+    ImGui::SetNextItemWidth(-1);
+    ImGui::SliderInt("##bossMaxDist", &Configs.Bosses.MaxDistance, 0, 1500, "Max Distance: %d m");
+    ImGui::Spacing();
+
+    if (ImGui::BeginTable("##bossFlags", 2, ImGuiTableFlags_SizingFixedFit)) {
+        ImGui::TableNextColumn(); ImGui::Checkbox("Name##boss",     &Configs.Bosses.Name);
+        ImGui::TableNextColumn(); ImGui::Checkbox("Distance##boss", &Configs.Bosses.Distance);
+        ImGui::EndTable();
+    }
+    ImGui::Spacing();
+    RenderFontSizeSlider("Text Size##boss", Configs.Bosses.FontSize);
+
+    EndCard();
+
+    // ── Boss Chams card ───────────────────────────────────────────────────
+    SectionHeader("Chams");
+    BeginCard();
+
+    {
+        std::vector<std::string> chamModes = {
+            LOC("menu","chams.OutlineRed"),   LOC("menu","chams.OutlineBlue"),
+            LOC("menu","chams.OutlineYellow"),LOC("menu","chams.OutlineOrange"),
+            LOC("menu","chams.OutlineCyan"),  LOC("menu","chams.OutlineMagenta"),
+            LOC("menu","chams.OutlineWhite"), LOC("menu","chams.FilledRed"),
+            LOC("menu","chams.FilledBlue"),   LOC("menu","chams.FilledYellow"),
+            LOC("menu","chams.FilledOrange"), LOC("menu","chams.FilledCyan"),
+            LOC("menu","chams.FilledMagenta"),LOC("menu","chams.FilledWhite")
+        };
+        ImGui::SetNextItemWidth(-1);
+        if (ImGui::BeginCombo("##bossChamMode", chamModes[Configs.Bosses.ChamMode].c_str())) {
+            for (int n = 0; n < (int)chamModes.size(); n++) {
+                bool sel = (Configs.Bosses.ChamMode == n);
+                if (ImGui::Selectable(chamModes[n].c_str(), sel)) Configs.Bosses.ChamMode = n;
+                if (sel) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::Spacing();
+        ImGui::Checkbox("Enable Boss Chams##boss", &Configs.Bosses.Chams);
+    }
+
+    EndCard();
+
+    // ── AI Enemy ESP card ─────────────────────────────────────────────────
+    SectionHeader("AI Enemy ESP");
+    BeginCard();
+
+    ImGui::Checkbox("Enable AI Enemy ESP##grunt", &Configs.Grunt.Enable);
+
+    if (Configs.Grunt.Enable) {
+        ImGui::Spacing();
+
+        if (ImGui::BeginTable("##gruntFlags", 2, ImGuiTableFlags_SizingFixedFit)) {
+            ImGui::TableNextColumn(); ImGui::Checkbox("Show Name##grunt",     &Configs.Grunt.ShowName);
+            ImGui::TableNextColumn(); ImGui::Checkbox("Show Distance##grunt", &Configs.Grunt.ShowDistance);
+            ImGui::EndTable();
+        }
+
+        ImGui::SetNextItemWidth(-1);
+        ImGui::SliderInt("##gruntDist", &Configs.Grunt.MaxDistance, 0, 500, "Max Distance: %d m");
+        RenderFontSizeSlider("Text Size##grunt", Configs.Grunt.FontSize);
+        ImGui::Spacing();
+
+        // AI type grid: 2 columns (checkbox + color)
+        ImGui::TextColored(ImVec4(0.83f, 0.57f, 0.16f, 1.f), "AI Types");
+        ImGui::Spacing();
+
+        struct AIType { const char* name; bool* en; ImVec4* col; };
+        AIType aiTypes[] = {
+            {"Grunt (common)",&Configs.Grunt.EnableGrunts,    &Configs.Grunt.ColorGrunt    },
+            {"Armored",       &Configs.Grunt.EnableArmored,   &Configs.Grunt.ColorArmored  },
+            {"Meathead",      &Configs.Grunt.EnableMeathead,  &Configs.Grunt.ColorMeathead },
+            {"Hive",          &Configs.Grunt.EnableHive,       &Configs.Grunt.ColorHive     },
+            {"Water Devil",   &Configs.Grunt.EnableWaterDevil,&Configs.Grunt.ColorWaterDevil},
+            {"Immolator",     &Configs.Grunt.EnableImmolator, &Configs.Grunt.ColorImmolator },
+            {"Hellhound",     &Configs.Grunt.EnableHellhound, &Configs.Grunt.ColorHellhound },
+            {"Leech",         &Configs.Grunt.EnableLeech,     &Configs.Grunt.ColorLeech    },
+            {"Special AI",    &Configs.Grunt.EnableSpecial,   &Configs.Grunt.ColorSpecial  },
+        };
+
+        if (ImGui::BeginTable("##aiGrid", 2, ImGuiTableFlags_SizingStretchSame)) {
+            for (auto& a : aiTypes) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Checkbox(a.name, a.en);
+                ImGui::TableNextColumn();
+                if (*a.en) {
+                    char cid[64]; snprintf(cid, sizeof(cid), "##c_%s", a.name);
+                    ImGui::ColorEdit4(cid, (float*)a.col,
+                        ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
+                }
+            }
+            ImGui::EndTable();
+        }
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        // Ambient animals
+        ImGui::Checkbox("Ambient Animals (master)", &Configs.Grunt.EnableAnimals);
+        if (Configs.Grunt.EnableAnimals) {
+            ImGui::Spacing();
+            struct Animal { const char* name; bool* en; ImVec4* col; };
+            Animal animals[] = {
+                {"Crow",        &Configs.Grunt.EnableCrow,      &Configs.Grunt.ColorCrow      },
+                {"Dying Cow",   &Configs.Grunt.EnableDyingCow,  &Configs.Grunt.ColorDyingCow  },
+                {"Dying Horse", &Configs.Grunt.EnableDyingHorse,&Configs.Grunt.ColorDyingHorse},
+                {"Duck",        &Configs.Grunt.EnableDuck,      &Configs.Grunt.ColorDuck      },
+                {"Bat",         &Configs.Grunt.EnableBat,       &Configs.Grunt.ColorBat       },
+            };
+            if (ImGui::BeginTable("##animGrid", 2, ImGuiTableFlags_SizingStretchSame)) {
+                for (auto& a : animals) {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn(); ImGui::Checkbox(a.name, a.en);
+                    ImGui::TableNextColumn();
+                    if (*a.en) {
+                        char cid[64]; snprintf(cid, sizeof(cid), "##ca_%s", a.name);
+                        ImGui::ColorEdit4(cid, (float*)a.col,
+                            ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
+                    }
+                }
+                ImGui::EndTable();
+            }
+        }
+    }
+
+    EndCard();
+
+    ImGui::EndChild();
+}
+
+// Helper: styled CollapsingHeader with amber accent tint
+static bool WorldSection(const char* label, bool defaultOpen = true) {
+    ImGui::PushStyleColor(ImGuiCol_Header,        ImVec4(0.18f, 0.14f, 0.08f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.25f, 0.20f, 0.11f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive,  ImVec4(0.22f, 0.17f, 0.10f, 1.00f));
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_CollapsingHeader;
+    if (defaultOpen) flags |= ImGuiTreeNodeFlags_DefaultOpen;
+    bool open = ImGui::CollapsingHeader(label, flags);
+    ImGui::PopStyleColor(3);
+    if (open) ImGui::Spacing();
+    return open;
+}
+
+void ImGuiMenu::RenderWorldItemsTab() {
+    ImGui::BeginChild("WorldItemsTab", ImVec2(0, 0), false);
+    SectionHeader("World Items ESP");
+
+    // ── Supply ────────────────────────────────────────────────────────────
+    if (WorldSection("Supply ESP")) {
+        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Supply.Enable);
+        ImGui::SameLine();
+        ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.Supply.TextColor);
+        ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.Supply.Name);
+        ImGui::SameLine();
+        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Supply.Distance);
+        ImGui::SliderInt("Max Distance##supply", &Configs.Supply.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+        RenderFontSizeSlider("Text Size##supply", Configs.Supply.FontSize);
+        ImGui::Spacing();
+
+        ImGui::BeginGroup();
+        ImGui::Text(LOC("menu", "supply.AmmoTypes").c_str());
+        ImGui::Checkbox(LOC("menu", "supply.ShowSpecialAmmo").c_str(),  &Configs.Supply.ShowSpecialAmmo);
+        ImGui::Checkbox(LOC("menu", "supply.ShowCompactAmmo").c_str(),  &Configs.Supply.ShowCompactAmmo);
+        ImGui::Checkbox(LOC("menu", "supply.ShowMediumAmmo").c_str(),   &Configs.Supply.ShowMediumAmmo);
+        ImGui::Checkbox(LOC("menu", "supply.ShowLongAmmo").c_str(),     &Configs.Supply.ShowLongAmmo);
+        ImGui::Checkbox(LOC("menu", "supply.ShowShotgunAmmo").c_str(),  &Configs.Supply.ShowShortgunAmmo);
+        ImGui::EndGroup();
+        ImGui::SameLine(250 * Configs.General.UIScale);
+        ImGui::BeginGroup();
+        ImGui::Text(LOC("menu", "supply.OtherTypes").c_str());
+        ImGui::Checkbox(LOC("menu", "supply.ShowAmmoSwapBox").c_str(),         &Configs.Supply.ShowAmmoSwapBox);
+        ImGui::Checkbox(LOC("menu", "supply.ShowMedkit").c_str(),              &Configs.Supply.ShowMedkit);
+        ImGui::Checkbox(LOC("menu", "supply.ShowYellowSupplyBox").c_str(),     &Configs.Supply.ShowSupplyBox);
+        ImGui::EndGroup();
+        ImGui::Spacing();
+    }
+
+    // ── Blood Bond ────────────────────────────────────────────────────────
+    if (WorldSection("Blood Bond ESP", false)) {
+        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.BloodBonds.Enable);
+        ImGui::SameLine(); HelpMarker(LOC("menu", "bb.HelpMarker").c_str());
+        ImGui::SameLine();
+        ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.BloodBonds.TextColor);
+        ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.BloodBonds.Name);
+        ImGui::SameLine();
+        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.BloodBonds.Distance);
+        ImGui::SliderInt("Max Distance##bb", &Configs.BloodBonds.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+        RenderFontSizeSlider("Text Size##bb", Configs.BloodBonds.FontSize);
+        ImGui::Spacing();
+    }
+
+    // ── Traps & Barrels ────────────────────────────────────────────────────
+    if (WorldSection("Traps & Barrels", false)) {
+        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Trap.Enable);
+        ImGui::SameLine();
+        ColorPickerWithText(LOC("menu", "traps.TrapColor").c_str(),   &Configs.Trap.TrapColor);
+        ImGui::SameLine();
+        ColorPickerWithText(LOC("menu", "traps.BarrelColor").c_str(), &Configs.Trap.BarrelColor);
+        ImGui::Checkbox(LOC("menu", "general.Name").c_str(),     &Configs.Trap.Name);
+        ImGui::SameLine();
+        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Trap.Distance);
+        ImGui::SliderInt("Max Distance##trap", &Configs.Trap.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+        RenderFontSizeSlider("Text Size##trap", Configs.Trap.FontSize);
+        ImGui::Spacing();
+
+        ImGui::BeginGroup();
+        ImGui::Text(LOC("menu", "traps.Traps").c_str());
+        ImGui::Checkbox(LOC("menu", "traps.ShowBeartraps").c_str(),           &Configs.Trap.ShowBeartrap);
+        ImGui::Checkbox(LOC("menu", "traps.ShowTripmines").c_str(),           &Configs.Trap.ShowTripmines);
+        ImGui::Checkbox(LOC("menu", "traps.ShowDarksightDynamite").c_str(),   &Configs.Trap.ShowDarksightDynamite);
+        ImGui::EndGroup();
+        ImGui::SameLine(250 * Configs.General.UIScale);
+        ImGui::BeginGroup();
+        ImGui::Text(LOC("menu", "traps.Barrels").c_str());
+        ImGui::Checkbox(LOC("menu", "traps.ShowGunpowderBarrels").c_str(),    &Configs.Trap.ShowGunpowderBurrels);
+        ImGui::Checkbox(LOC("menu", "traps.ShowOilBarrels").c_str(),          &Configs.Trap.ShowOilBurrels);
+        ImGui::Checkbox(LOC("menu", "traps.ShowBioBarrels").c_str(),          &Configs.Trap.ShowBioBurrels);
+        ImGui::EndGroup();
+        ImGui::Spacing();
+    }
+
+    // ── Points of Interest ─────────────────────────────────────────────────
+    if (WorldSection("Points of Interest", false)) {
+        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.POI.Enable);
+        ImGui::SameLine();
+        ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.POI.TextColor);
+        ImGui::Checkbox(LOC("menu", "general.Name").c_str(),     &Configs.POI.Name);
+        ImGui::SameLine();
+        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.POI.Distance);
+        ImGui::SliderInt("Max Distance##poi", &Configs.POI.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+        RenderFontSizeSlider("Text Size##poi", Configs.POI.FontSize);
+        ImGui::Spacing();
+
+        ImGui::BeginGroup();
+        ImGui::Text(LOC("menu", "poi.MainPOIs").c_str());
+        ImGui::Checkbox(LOC("menu", "poi.ShowResupplyPoints").c_str(),         &Configs.POI.ShowResupplyStation);
+        ImGui::Checkbox(LOC("menu", "poi.ShowExtractionPoints").c_str(),       &Configs.POI.ShowExtraction);
+        ImGui::Checkbox(LOC("menu", "poi.ShowCashRegisters").c_str(),          &Configs.POI.ShowCashRegisters);
+        ImGui::Checkbox(LOC("menu", "poi.ShowPouches").c_str(),                &Configs.POI.ShowPouches);
+        ImGui::Checkbox(LOC("menu", "poi.ShowClues").c_str(),                  &Configs.POI.ShowClues);
+        ImGui::EndGroup();
+        ImGui::SameLine(250 * Configs.General.UIScale);
+        ImGui::BeginGroup();
+        ImGui::Text(LOC("menu", "poi.AdditionalPOIs").c_str());
+        ImGui::Checkbox(LOC("menu", "poi.ShowPosters").c_str(),                &Configs.POI.ShowPosters);
+        ImGui::Checkbox(LOC("menu", "poi.ShowBlueprints").c_str(),             &Configs.POI.ShowBlueprints);
+        ImGui::Checkbox(LOC("menu", "poi.ShowGunOil").c_str(),                 &Configs.POI.ShowGunOil);
+        ImGui::Checkbox(LOC("menu", "poi.ShowSeasonalDestructibles").c_str(),  &Configs.POI.ShowSeasonalDestructibles);
+        ImGui::SameLine(); HelpMarker(LOC("menu", "poi.ShowSeasonalDestructiblesInfo").c_str());
+        ImGui::Checkbox("Show Boon", &Configs.POI.ShowBoons);
+        ImGui::SameLine();
+        ImGui::ColorEdit4("##BoonColor", (float*)&Configs.POI.BoonColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
+        ImGui::EndGroup();
+        ImGui::Spacing();
+    }
 
     ImGui::EndChild();
 }
 
 void ImGuiMenu::RenderSupplyESPTab() {
     ImGui::BeginChild("SupplyESPTab", ImVec2(0, 0), false);
-
+    SectionHeader("Supply ESP");
     ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Supply.Enable);
     ImGui::SameLine();
     ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.Supply.TextColor);
@@ -754,7 +1157,7 @@ void ImGuiMenu::RenderSupplyESPTab() {
     ImGui::SliderInt(LOC("menu", "general.MaxDistance").c_str(), &Configs.Supply.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
     RenderFontSizeSlider(LOC("menu", "general.TextSize").c_str(), Configs.Supply.FontSize);
 
-    ImGui::Separator();
+    SectionHeader("Ammo Types");
 
     // Supply Types Column 1
     ImGui::BeginGroup();
@@ -780,7 +1183,7 @@ void ImGuiMenu::RenderSupplyESPTab() {
 
 void ImGuiMenu::RenderBloodBondsESPTab() {
     ImGui::BeginChild("BloodBondsESPTab", ImVec2(0, 0), false);
-
+    SectionHeader("BloodBonds ESP");
     ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.BloodBonds.Enable);
     ImGui::SameLine();
     HelpMarker(LOC("menu", "bb.HelpMarker").c_str());
@@ -799,7 +1202,8 @@ void ImGuiMenu::RenderBloodBondsESPTab() {
 
 void ImGuiMenu::RenderTrapESPTab() {
     ImGui::BeginChild("TrapESPTab", ImVec2(0, 0), false);
-
+    SectionHeader("Traps ESP");
+    ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Trap.Enable);
     ImGui::SameLine();
     ColorPickerWithText(LOC("menu", "traps.TrapColor").c_str(), &Configs.Trap.TrapColor);
     ImGui::SameLine();
@@ -811,6 +1215,8 @@ void ImGuiMenu::RenderTrapESPTab() {
 
     ImGui::SliderInt(LOC("menu", "general.MaxDistance").c_str(), &Configs.Trap.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
     RenderFontSizeSlider(LOC("menu", "general.TextSize").c_str(), Configs.Trap.FontSize);
+
+    SectionHeader("Traps & Barrels");
 
     // Traps Column
     ImGui::BeginGroup();
@@ -834,7 +1240,7 @@ void ImGuiMenu::RenderTrapESPTab() {
 
 void ImGuiMenu::RenderPOIESPTab() {
     ImGui::BeginChild("POIESPTab", ImVec2(0, 0), false);
-
+    SectionHeader("POI ESP");
     ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.POI.Enable);
     ImGui::SameLine();
     ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.POI.TextColor);
@@ -845,6 +1251,8 @@ void ImGuiMenu::RenderPOIESPTab() {
 
     ImGui::SliderInt(LOC("menu", "general.MaxDistance").c_str(), &Configs.POI.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
     RenderFontSizeSlider(LOC("menu", "general.TextSize").c_str(), Configs.POI.FontSize);
+
+    SectionHeader("Points of Interest");
 
     // POI Types Column 1
     ImGui::BeginGroup();
@@ -875,255 +1283,160 @@ void ImGuiMenu::RenderPOIESPTab() {
 }
 
 void ImGuiMenu::RenderTraitESPTab() {
+    g_cardId = 400;
     ImGui::BeginChild("TraitESPTab", ImVec2(0, 0), false);
+    SectionHeader("Traits ESP");
 
-    ImGui::BeginGroup();
+    // ── General settings card ─────────────────────────────────────────────
+    BeginCard();
 
-    ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Traits.Enable);
-    ImGui::SameLine();
-    ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.Traits.TraitColor);
-    
-    ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.Traits.Name);
-    ImGui::SameLine();
-    ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Traits.Distance);
+    ImGui::Checkbox("Enable##tr", &Configs.Traits.Enable);
+    ColorPickerWithText("Color", &Configs.Traits.TraitColor);
 
-    RenderFontSizeSlider(LOC("menu", "general.TextSize").c_str(), Configs.Traits.FontSize);
-
-    ImGui::EndGroup();
+    if (ImGui::BeginTable("##trFlags", 2, ImGuiTableFlags_SizingFixedFit)) {
+        ImGui::TableNextColumn(); ImGui::Checkbox("Name##tr",     &Configs.Traits.Name);
+        ImGui::TableNextColumn(); ImGui::Checkbox("Distance##tr", &Configs.Traits.Distance);
+        ImGui::EndTable();
+    }
     ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-    ImGui::BeginGroup();
+    RenderFontSizeSlider("Text Size##tr", Configs.Traits.FontSize);
 
-    ImGui::Checkbox(LOC("trait", "blademancer").c_str(), &Configs.Traits.EnableBlademancer);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "blademancer").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##blademancer").c_str(), &Configs.Traits.BlademancerDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    EndCard();
 
-    ImGui::Checkbox(LOC("trait", "corpseseer").c_str(), &Configs.Traits.EnableCorpseseer);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "corpseseer").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##corpseseer").c_str(), &Configs.Traits.CorpseseerDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    // Helper: render a group of traits in a 2-column table
+    // Columns: [enable checkbox]  [name + dist slider]
+    struct TraitEntry { const char* loc; bool* en; int* dist; };
 
-    ImGui::Checkbox(LOC("trait", "gunrunner").c_str(), &Configs.Traits.EnableGunrunner);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "gunrunner").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##gunrunner").c_str(), &Configs.Traits.GunrunnerDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    auto TraitGroup = [&](const char* header, TraitEntry* entries, int count) {
+        SectionHeader(header);
+        BeginCard();
+        if (ImGui::BeginTable(header, 2,
+            ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV))
+        {
+            ImGui::TableSetupColumn("##chk", ImGuiTableColumnFlags_WidthFixed, 20.f);
+            ImGui::TableSetupColumn("##rest", ImGuiTableColumnFlags_WidthStretch);
+            for (int i = 0; i < count; i++) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                char chkId[48]; snprintf(chkId, sizeof(chkId), "##tr_%s", entries[i].loc);
+                ImGui::Checkbox(chkId, entries[i].en);
+                ImGui::TableNextColumn();
+                // Name label + inline slider
+                ImGui::Text("%s", LOC("trait", entries[i].loc).c_str());
+                if (ImGui::IsItemHovered()) {
+                    ImGui::BeginTooltip();
+                    ImGui::TextUnformatted(LOC("trait", entries[i].loc).c_str());
+                    ImGui::EndTooltip();
+                }
+                if (*entries[i].en) {
+                    ImGui::SameLine();
+                    char sId[48]; snprintf(sId, sizeof(sId), "##td_%s", entries[i].loc);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::SliderInt(sId, entries[i].dist, 0, 1500, "%d m");
+                }
+            }
+            ImGui::EndTable();
+        }
+        EndCard();
+    };
 
-    ImGui::EndGroup();
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-    ImGui::BeginGroup();
+    // ── Combat ────────────────────────────────────────────────────────────
+    TraitEntry combat[] = {
+        {"blademancer", &Configs.Traits.EnableBlademancer, &Configs.Traits.BlademancerDistance},
+        {"corpseseer",  &Configs.Traits.EnableCorpseseer,  &Configs.Traits.CorpseseerDistance },
+        {"gunrunner",   &Configs.Traits.EnableGunrunner,   &Configs.Traits.GunrunnerDistance  },
+    };
+    TraitGroup("Combat Traits", combat, IM_ARRAYSIZE(combat));
 
-    ImGui::Checkbox(LOC("trait", "berserker").c_str(), &Configs.Traits.EnableBerserker);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "berserker").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##berserker").c_str(), &Configs.Traits.BerserkerDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    // ── Support ───────────────────────────────────────────────────────────
+    TraitEntry support[] = {
+        {"berserker",    &Configs.Traits.EnableBerserker,    &Configs.Traits.BerserkerDistance   },
+        {"deathcheat",   &Configs.Traits.EnableDeathcheat,   &Configs.Traits.DeathcheatDistance  },
+        {"necromancer",  &Configs.Traits.EnableNecromancer,  &Configs.Traits.NecromancerDistance },
+        {"rampage",      &Configs.Traits.EnableRampage,      &Configs.Traits.RampageDistance     },
+        {"relentless",   &Configs.Traits.EnableRelentless,   &Configs.Traits.RelentlessDistance  },
+        {"remedy",       &Configs.Traits.EnableRemedy,       &Configs.Traits.RemedyDistance      },
+        {"shadow",       &Configs.Traits.EnableShadow,       &Configs.Traits.ShadowDistance      },
+        {"shadowleap",   &Configs.Traits.EnableShadowleap,   &Configs.Traits.ShadowleapDistance  },
+    };
+    TraitGroup("Support Traits", support, IM_ARRAYSIZE(support));
 
-    ImGui::Checkbox(LOC("trait", "deathcheat").c_str(), &Configs.Traits.EnableDeathcheat);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "deathcheat").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##deathcheat").c_str(), &Configs.Traits.DeathcheatDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    // ── Stealth & Mobility ───────────────────────────────────────────────
+    TraitEntry stealth[] = {
+        {"beastface",     &Configs.Traits.EnableBeastface,     &Configs.Traits.BeastfaceDistance    },
+        {"bloodless",     &Configs.Traits.EnableBloodless,     &Configs.Traits.BloodlessDistance    },
+        {"bulletgrubber", &Configs.Traits.EnableBulletgrubber, &Configs.Traits.BulletgrubberDistance},
+        {"conduit",       &Configs.Traits.EnableConduit,       &Configs.Traits.ConduitDistance      },
+        {"determination", &Configs.Traits.EnableDetermination, &Configs.Traits.DeterminationDistance},
+        {"doctor",        &Configs.Traits.EnableDoctor,        &Configs.Traits.DoctorDistance       },
+        {"fanning",       &Configs.Traits.EnableFanning,       &Configs.Traits.FanningDistance      },
+        {"fastfingers",   &Configs.Traits.EnableFastfingers,   &Configs.Traits.FastfingersDistance  },
+        {"gatorlegs",     &Configs.Traits.EnableGatorlegs,     &Configs.Traits.GatorlegsDistance    },
+        {"ghoul",         &Configs.Traits.EnableGhoul,         &Configs.Traits.GhoulDistance        },
+        {"greyhound",     &Configs.Traits.EnableGreyhound,     &Configs.Traits.GreyhoundDistance    },
+        {"levering",      &Configs.Traits.EnableLevering,      &Configs.Traits.LeveringDistance     },
+        {"lightfoot",     &Configs.Traits.EnableLightfoot,     &Configs.Traits.LightfootDistance    },
+        {"magpie",        &Configs.Traits.EnableMagpie,        &Configs.Traits.MagpieDistance       },
+        {"packmule",      &Configs.Traits.EnablePackmule,      &Configs.Traits.PackmuleDistance     },
+        {"physician",     &Configs.Traits.EnablePhysician,     &Configs.Traits.PhysicianDistance    },
+        {"pitcher",       &Configs.Traits.EnablePitcher,       &Configs.Traits.PitcherDistance      },
+        {"quartermaster", &Configs.Traits.EnableQuartermaster, &Configs.Traits.QuartermasterDistance},
+        {"resilience",    &Configs.Traits.EnableResilience,    &Configs.Traits.ResilienceDistance   },
+        {"salveskin",     &Configs.Traits.EnableSalveskin,     &Configs.Traits.SalveskinDistance    },
+        {"serpent",       &Configs.Traits.EnableSerpent,       &Configs.Traits.SerpentDistance      },
+        {"vigor",         &Configs.Traits.EnableVigor,         &Configs.Traits.VigorDistance        },
+        {"whispersmith",  &Configs.Traits.EnableWhispersmith,  &Configs.Traits.WhispersmithDistance },
+        {"witness",       &Configs.Traits.EnableWitness,       &Configs.Traits.WitnessDistance      },
+    };
+    TraitGroup("Stealth & Mobility", stealth, IM_ARRAYSIZE(stealth));
 
-    ImGui::Checkbox(LOC("trait", "necromancer").c_str(), &Configs.Traits.EnableNecromancer);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "necromancer").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##necromancer").c_str(), &Configs.Traits.NecromancerDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "rampage").c_str(), &Configs.Traits.EnableRampage);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "rampage").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##rampage").c_str(), &Configs.Traits.RampageDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "relentless").c_str(), &Configs.Traits.EnableRelentless);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "relentless").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##relentless").c_str(), &Configs.Traits.RelentlessDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "remedy").c_str(), &Configs.Traits.EnableRemedy);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "remedy").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##remedy").c_str(), &Configs.Traits.RemedyDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "shadow").c_str(), &Configs.Traits.EnableShadow);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "shadow").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##shadow").c_str(), &Configs.Traits.ShadowDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "shadowleap").c_str(), &Configs.Traits.EnableShadowleap);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "shadowleap").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##shadowleap").c_str(), &Configs.Traits.ShadowleapDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::EndGroup();
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-    ImGui::BeginGroup();
-
-    ImGui::Checkbox(LOC("trait", "beastface").c_str(), &Configs.Traits.EnableBeastface);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "beastface").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##beastface").c_str(), &Configs.Traits.BeastfaceDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "bloodless").c_str(), &Configs.Traits.EnableBloodless);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "bloodless").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##bloodless").c_str(), &Configs.Traits.BloodlessDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "bulletgrubber").c_str(), &Configs.Traits.EnableBulletgrubber);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "bulletgrubber").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##bulletgrubber").c_str(), &Configs.Traits.BulletgrubberDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "conduit").c_str(), &Configs.Traits.EnableConduit);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "conduit").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##conduit").c_str(), &Configs.Traits.ConduitDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "determination").c_str(), &Configs.Traits.EnableDetermination);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "determination").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##determination").c_str(), &Configs.Traits.DeterminationDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "doctor").c_str(), &Configs.Traits.EnableDoctor);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "doctor").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##doctor").c_str(), &Configs.Traits.DoctorDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "fanning").c_str(), &Configs.Traits.EnableFanning);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "fanning").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##fanning").c_str(), &Configs.Traits.FanningDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "fastfingers").c_str(), &Configs.Traits.EnableFastfingers);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "fastfingers").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##fastfingers").c_str(), &Configs.Traits.FastfingersDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "gatorlegs").c_str(), &Configs.Traits.EnableGatorlegs);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "gatorlegs").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##gatorlegs").c_str(), &Configs.Traits.GatorlegsDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "ghoul").c_str(), &Configs.Traits.EnableGhoul);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "ghoul").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##ghoul").c_str(), &Configs.Traits.GhoulDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "greyhound").c_str(), &Configs.Traits.EnableGreyhound);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "greyhound").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##greyhound").c_str(), &Configs.Traits.GreyhoundDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "levering").c_str(), &Configs.Traits.EnableLevering);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "levering").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##levering").c_str(), &Configs.Traits.LeveringDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "lightfoot").c_str(), &Configs.Traits.EnableLightfoot);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "lightfoot").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##lightfoot").c_str(), &Configs.Traits.LightfootDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "magpie").c_str(), &Configs.Traits.EnableMagpie);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "magpie").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##magpie").c_str(), &Configs.Traits.MagpieDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "packmule").c_str(), &Configs.Traits.EnablePackmule);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "packmule").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##packmule").c_str(), &Configs.Traits.PackmuleDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "physician").c_str(), &Configs.Traits.EnablePhysician);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "physician").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##physician").c_str(), &Configs.Traits.PhysicianDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "pitcher").c_str(), &Configs.Traits.EnablePitcher);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "pitcher").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##pitcher").c_str(), &Configs.Traits.PitcherDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "quartermaster").c_str(), &Configs.Traits.EnableQuartermaster);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "quartermaster").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##quartermaster").c_str(), &Configs.Traits.QuartermasterDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "resilience").c_str(), &Configs.Traits.EnableResilience);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "resilience").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##resilience").c_str(), &Configs.Traits.ResilienceDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "salveskin").c_str(), &Configs.Traits.EnableSalveskin);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "salveskin").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##salveskin").c_str(), &Configs.Traits.SalveskinDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "serpent").c_str(), &Configs.Traits.EnableSerpent);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "serpent").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##serpent").c_str(), &Configs.Traits.SerpentDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "vigor").c_str(), &Configs.Traits.EnableVigor);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "vigor").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##vigor").c_str(), &Configs.Traits.VigorDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "whispersmith").c_str(), &Configs.Traits.EnableWhispersmith);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "whispersmith").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##whispersmith").c_str(), &Configs.Traits.WhispersmithDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::Checkbox(LOC("trait", "witness").c_str(), &Configs.Traits.EnableWitness);
-    if (ImGui::IsItemHovered()) { ImGui::BeginTooltip(); ImGui::Text(LOC("trait", "witness").c_str()); ImGui::EndTooltip(); }
-    ImGui::SameLine(120 * Configs.General.UIScale);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##witness").c_str(), &Configs.Traits.WitnessDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::EndGroup();
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-    ImGui::BeginGroup();
-
-    ImGui::Checkbox(LOC("menu", "traits.Other").c_str(), &Configs.Traits.EnableOther);
-    ImGui::SliderInt((LOC("menu", "general.MaxDistance") + "##other").c_str(), &Configs.Traits.OtherDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
-
-    ImGui::EndGroup();
+    // ── Other ─────────────────────────────────────────────────────────────
+    SectionHeader("Other");
+    BeginCard();
+    ImGui::Checkbox("Other Traits", &Configs.Traits.EnableOther);
+    if (Configs.Traits.EnableOther) {
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(-1);
+        ImGui::SliderInt("##trOther", &Configs.Traits.OtherDistance, 0, 1500, "Max %d m");
+    }
+    EndCard();
 
     ImGui::EndChild();
 }
 
+
+
+
 void ImGuiMenu::RenderHotkeysTab() {
     ImGui::BeginChild("HotkeysTab", ImVec2(0, 0), false);
-    
-    ImGui::Text(LOC("menu", "tabs.PlayerESP").c_str());
+
+    SectionHeader("Quick Toggles");
+
+    ImGui::Text("Players");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##PlayerToggle", &Configs.Player.ToggleKey);
-    
-    ImGui::Text(LOC("menu", "tabs.BossesESP").c_str());
+
+    ImGui::Text("Bosses & AI");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##BossesToggle", &Configs.Bosses.ToggleKey);
-    
-    ImGui::Text(LOC("menu", "tabs.SupplyESP").c_str());
+
+    ImGui::Text("Supply");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##SupplyToggle", &Configs.Supply.ToggleKey);
-    
-    ImGui::Text(LOC("menu", "tabs.BBESP").c_str());
+
+    ImGui::Text("Blood Bond");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##BBToggle", &Configs.BloodBonds.ToggleKey);
-    
-    ImGui::Text(LOC("menu", "tabs.TrapESP").c_str());
+
+    ImGui::Text("Traps");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##TrapToggle", &Configs.Trap.ToggleKey);
-    
-    ImGui::Text(LOC("menu", "tabs.POIESP").c_str());
+
+    ImGui::Text("POI");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##POIToggle", &Configs.POI.ToggleKey);
-    
-    ImGui::Text(LOC("menu", "tabs.TraitESP").c_str());
+
+    ImGui::Text("Traits");
     ImGui::SameLine(180 * Configs.General.UIScale);
     HotKey("##TraitToggle", &Configs.Traits.ToggleKey);
 
@@ -1137,9 +1450,8 @@ void ImGuiMenu::RenderHotkeysTab() {
 void ImGuiMenu::RenderOverlayTab() {
     ImGui::BeginChild("OverlayTab", ImVec2(0, 0), false);
 
-    ImGui::BeginGroup();
-    ImGui::Text("Display Settings");
-    
+    SectionHeader("Display Settings");
+
     int prevMonitor = DisplayManager::GetCurrentMonitorIndex();
     int currentMonitor = prevMonitor;
     std::string monitorHeader = "Select Monitor";
@@ -1202,10 +1514,9 @@ void ImGuiMenu::RenderOverlayTab() {
     
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("Radar");
 
     ImGui::BeginGroup();
-    ImGui::Text(LOC("menu", "overlay.Radar").c_str());
     ImGui::Checkbox(LOC("menu", "overlay.DrawMapRadar").c_str(), &Configs.Overlay.DrawRadar);
     ImGui::SameLine();
     ImGui::Checkbox(LOC("menu", "overlay.DrawSelf").c_str(), &Configs.Overlay.RadarDrawSelf);
@@ -1223,20 +1534,18 @@ void ImGuiMenu::RenderOverlayTab() {
 
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("Player List");
 
     ImGui::BeginGroup();
-    ImGui::Text(LOC("menu", "overlay.PlayerList").c_str());
     ImGui::Checkbox(LOC("menu", "overlay.ShowPlayerList").c_str(), &Configs.Player.ShowPlayerList);
     ImGui::SameLine();
     ColorPickerWithText(LOC("menu", "overlay.PlayerListColor").c_str(), &Configs.Player.PlayerListColor);
     RenderFontSizeSlider(LOC("menu", "overlay.PlayerListSize").c_str(), Configs.Player.PlayerListFontSize);
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("FPS Counter");
 
     ImGui::BeginGroup();
-    ImGui::Text(LOC("menu", "overlay.FPSCounter").c_str());
     ImGui::Checkbox(LOC("menu", "overlay.ShowFPS").c_str(), &Configs.Overlay.ShowFPS);
     ImGui::SameLine();
     ColorPickerWithText(LOC("menu", "overlay.FPSColor").c_str(), &Configs.Overlay.FpsColor);
@@ -1285,7 +1594,7 @@ void ImGuiMenu::RenderOverlayTab() {
 
 void ImGuiMenu::RenderAimbotTab() {
     ImGui::BeginChild("AimbotTab", ImVec2(0, 0), false);
-
+    SectionHeader("Aimbot");
     // Main settings
     ImGui::BeginGroup();
     ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Aimbot.Enable);
@@ -1311,11 +1620,10 @@ void ImGuiMenu::RenderAimbotTab() {
 
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("Device Connection (Makcu)");
 
-    // Device Connection settings (Makcu only via makcu-cpp library)
+    // Device Connection settings
     ImGui::BeginGroup();
-    ImGui::Text("Device Connection (Makcu)");
 
     // COM Port selection
     {
@@ -1385,7 +1693,7 @@ void ImGuiMenu::RenderAimbotTab() {
     }
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("Visual Settings");
 
     // Visual settings
     ImGui::BeginGroup();
@@ -1399,11 +1707,11 @@ void ImGuiMenu::RenderAimbotTab() {
     ImGui::SameLine(); HelpMarker("Field of View in degrees where aimbot will activate");
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("Targeting");
 
-    // Distance settings
+    // Distance & priority settings
     ImGui::BeginGroup();
-    ImGui::SliderInt(LOC("menu", "general.MaxDistance").c_str(), &Configs.Aimbot.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
+    ImGui::SliderInt("Max Distance##aimbot", &Configs.Aimbot.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
     ImGui::SameLine(); HelpMarker("Maximum distance to target");
 
     static const char* priorityTypes[] = {
@@ -1425,11 +1733,9 @@ void ImGuiMenu::RenderAimbotTab() {
     );
     ImGui::EndGroup();
 
-    ImGui::Separator();
+    SectionHeader("Prediction");
 
-    // Prediction settings
     ImGui::BeginGroup();
-    ImGui::Text("Prediction");
     ImGui::Checkbox("Enable Prediction", &Configs.Aimbot.Prediction);
     ImGui::SameLine(); HelpMarker(
         "Lead targets based on their movement velocity and bullet travel time.\n"
@@ -1729,6 +2035,126 @@ void ImGuiMenu::RenderSettingsTab() {
         ImGui::Text(LOC("menu", "settings.ExitAppInfo").c_str());
         ImGui::EndTooltip();
     }
+
+    SectionHeader("Quick Toggles");
+
+    // Feature table: one entry per bit in HotkeyListMask
+    struct HkFeature { const char* name; int* key; };
+    HkFeature features[] = {
+        { "Players",    &Configs.Player.ToggleKey      },
+        { "Bosses & AI",&Configs.Bosses.ToggleKey      },
+        { "Supply",     &Configs.Supply.ToggleKey      },
+        { "Blood Bond", &Configs.BloodBonds.ToggleKey  },
+        { "Traps",      &Configs.Trap.ToggleKey        },
+        { "POI",        &Configs.POI.ToggleKey         },
+        { "Traits",     &Configs.Traits.ToggleKey      },
+        { "Radar",      &Configs.Overlay.RadarKey      },
+    };
+    constexpr int FEAT_COUNT = IM_ARRAYSIZE(features);
+    float scale = Configs.General.UIScale;
+
+    // ── [+ Add] button ────────────────────────────────────────────────────
+    ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.20f, 0.16f, 0.09f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.24f, 0.13f, 1.f));
+    if (ImGui::Button("  + Add Toggle  "))
+        ImGui::OpenPopup("##hkAddPopup");
+    ImGui::PopStyleColor(2);
+
+    // Add popup: shows all features not yet in the list
+    if (ImGui::BeginPopup("##hkAddPopup", ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::TextColored(ImVec4(0.83f, 0.57f, 0.16f, 1.f), "Select feature to add:");
+        ImGui::Separator();
+        ImGui::Spacing();
+        bool anyHidden = false;
+        for (int i = 0; i < FEAT_COUNT; i++) {
+            uint8_t bit = (uint8_t)(1 << i);
+            if (Configs.General.HotkeyListMask & bit) continue; // already in list
+            anyHidden = true;
+            if (ImGui::Selectable(features[i].name, false)) {
+                Configs.General.HotkeyListMask |= bit;  // add to list
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        if (!anyHidden)
+            ImGui::TextDisabled("All features are already added.");
+        ImGui::Spacing();
+        ImGui::EndPopup();
+    }
+
+    ImGui::Spacing();
+
+    // ── Active hotkey rows ────────────────────────────────────────────────
+    for (int i = 0; i < FEAT_COUNT; i++) {
+        uint8_t bit = (uint8_t)(1 << i);
+        if (!(Configs.General.HotkeyListMask & bit)) continue;  // not in list
+
+        const char* name = features[i].name;
+        int* key = features[i].key;
+
+        // Label column
+        ImGui::Text("%s", name);
+        ImGui::SameLine(160 * scale);
+
+        // [Key] capture button
+        char popupId[64]; snprintf(popupId, sizeof(popupId), "##hkpop_%d", i);
+        char btnLabel[80];
+        if (*key)
+            snprintf(btnLabel, sizeof(btnLabel), "[%s]##hkb_%d", ImGuiUtils::GetKeyName(*key), i);
+        else
+            snprintf(btnLabel, sizeof(btnLabel), "[None]##hkb_%d", i);
+
+        ImGui::PushStyleColor(ImGuiCol_Button,
+            *key ? ImVec4(0.20f, 0.16f, 0.09f, 1.f) : ImVec4(0.12f, 0.10f, 0.07f, 1.f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.28f, 0.22f, 0.12f, 1.f));
+        if (ImGui::Button(btnLabel, ImVec2(110 * scale, 0)))
+            ImGui::OpenPopup(popupId);
+        ImGui::PopStyleColor(2);
+
+        // Key capture popup
+        if (ImGui::BeginPopup(popupId,
+            ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
+        {
+            ImGui::TextColored(ImVec4(0.83f, 0.57f, 0.16f, 1.f), "Press any key...");
+            ImGui::Spacing();
+            ImGui::TextDisabled("(ESC to cancel)");
+
+            struct { int btn; int vk; } mbtn[] = {
+                {0,VK_LBUTTON},{1,VK_RBUTTON},{2,VK_MBUTTON},{3,VK_XBUTTON1},{4,VK_XBUTTON2}
+            };
+            for (auto& m : mbtn) {
+                if (ImGui::IsMouseClicked(m.btn)) {
+                    *key = m.vk; ImGui::CloseCurrentPopup(); break;
+                }
+            }
+            for (int k = ImGuiKey_NamedKey_BEGIN; k < ImGuiKey_NamedKey_END; k++) {
+                if (ImGui::IsKeyPressed((ImGuiKey)k)) {
+                    if ((ImGuiKey)k == ImGuiKey_Escape)
+                        ImGui::CloseCurrentPopup();
+                    else { *key = ImGuiUtils::ImGuiKeyToVirtualKey((ImGuiKey)k); ImGui::CloseCurrentPopup(); }
+                    break;
+                }
+            }
+            ImGui::EndPopup();
+        }
+
+        // [− Remove] red button — always available
+        ImGui::SameLine();
+        ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.48f, 0.08f, 0.08f, 1.f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.68f, 0.12f, 0.12f, 1.f));
+        char rmId[32]; snprintf(rmId, sizeof(rmId), " - ##rm_%d", i);
+        if (ImGui::Button(rmId, ImVec2(24 * scale, 0))) {
+            *key = 0;                                         // clear key
+            Configs.General.HotkeyListMask &= ~bit;          // remove from list
+        }
+        ImGui::PopStyleColor(2);
+        ImGui::Spacing();
+    }
+
+    if (Configs.General.HotkeyListMask == 0) {
+        ImGui::TextDisabled("No toggles added. Click [+ Add Toggle] to begin.");
+        ImGui::Spacing();
+    }
+
 
     ImGui::EndChild();
 }

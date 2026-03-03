@@ -34,6 +34,28 @@ enum class EntityType : int
 	Rotjaw,
 	Hellborn,
 
+	// AI Grunts (class: grunt)
+	Grunt,
+
+	// AI Special — class: grunt_base
+	Armored,      // Slave_*_Armored
+	Meathead,     // Slave_*_Humanoid
+	SpecialAI,    // Slave_*_Random (unknown type)
+
+	// AI Special — own class
+	Hive,         // class: hive_template
+	WaterDevil,   // class: waterdevil_template
+	Immolator,    // class: immolator_template (AI enemy — ไม่ใช่ boss)
+	Hellhound,    // class: TBD
+	Leech,        // class: TBD
+
+	// Ambient Animals
+	Crow,         // class: Crows
+	DyingCow,     // class: DyingCow
+	DyingHorse,   // class: DyingHorse
+	Duck,         // class: Ducks
+	Bat,          // class: Bats
+
 	CashRegister,
 	GoldCashRegister,
 
@@ -299,6 +321,8 @@ struct EntityRenderData {
 	std::string WeaponName1;  // Primary weapon
 	std::string WeaponName2;  // Secondary weapon
 	int        TeamId     = -1; // -1=unassigned, 0=solo, 1..N=team number
+	bool       IsSpectator   = false; // entity+0x38: player is spectating someone
+	int        SpectatorCount = 0;    // entity+0x70+0x08: how many players spectate this entity
 };
 
 class WorldEntity
@@ -371,6 +395,7 @@ private:
 	std::string WeaponName2;  // secondary weapon
 	int TeamId = -1;          // -1=unassigned, 0=solo, 1..N=team number (set once in CacheEntities)
 
+
 	bool Valid = true;
 
 	std::unordered_map<EntityType, std::string> Names = {
@@ -387,6 +412,23 @@ private:
 		{EntityType::Spider, "Spider"},
 		{EntityType::Rotjaw, "Rotjaw"},
 		{EntityType::Hellborn, "Hellborn"},
+
+		{EntityType::Grunt, "Grunt"},
+		{EntityType::Armored, "Armored"},
+		{EntityType::Meathead, "Meathead"},
+		{EntityType::Hive, "Hive"},
+		{EntityType::WaterDevil, "Water Devil"},
+		{EntityType::Immolator, "Immolator"},
+		{EntityType::Hellhound, "Hellhound"},
+		{EntityType::Leech, "Leech"},
+
+		{EntityType::Crow, "Crow"},
+		{EntityType::DyingCow, "Dying Cow"},
+		{EntityType::DyingHorse, "Dying Horse"},
+		{EntityType::Duck, "Duck"},
+		{EntityType::Bat, "Bat"},
+
+		{EntityType::SpecialAI, "Special AI"},
 
 		{EntityType::CashRegister, "CashRegister"},
 		{EntityType::GoldCashRegister, "GoldCashRegister"},
@@ -490,6 +532,9 @@ public:
 	}
 	void SetTeamId(int id) { TeamId = id; }
 	int  GetTeamId() const { return TeamId; }
+	// Spectator info — updated per-frame in UpdatePlayerList
+	bool GetIsSpectator()   const { return IsSpectator; }
+	int  GetSpectatorCount() const { return SpectatorCount; }
 	Vector3 GetHeadPosition() const { return HeadBonePtr != 0 ? BonePositions[0] : HeadPosition; }
 	uint32_t GetBoneCount() const { return BoneCount; }
 	const std::string& GetDebugBoneNames() const { return DebugBoneNames; }
@@ -510,6 +555,14 @@ public:
 	uint64_t SpecCountPointer3 = 0x0;
 	uint64_t SpecCountPointer4 = 0x0;
 	int SpecCount = 0;
+
+	// Per-player spectator data (entity+0x38 / entity+0x70+0x08)
+	static const uint64_t IsSpectatorOffset   = 0x38;
+	static const uint64_t SpectatorListOffset = 0x70;
+	static const uint64_t SpectatorCountOff2  = 0x08;
+	bool     IsSpectator     = false;
+	uint64_t SpectatorListPtr = 0;
+	int      SpectatorCount  = 0;
 
 	static const uint32_t HIDDEN_FLAG = 0x8;
 public:

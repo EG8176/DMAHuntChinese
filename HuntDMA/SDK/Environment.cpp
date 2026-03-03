@@ -180,8 +180,11 @@ void Environment::UpdatePlayerList()
 		ent->UpdateExtraction(handle);
 		ent->UpdateHeadPosition(handle);
 
+		// Spectator reads: entity+0x38 = bool isSpectator, entity+0x70 = spectatorList ptr
+		TargetProcess.AddScatterReadRequest(handle, ent->GetClass() + WorldEntity::IsSpectatorOffset,   &ent->IsSpectator,    sizeof(bool));
+		TargetProcess.AddScatterReadRequest(handle, ent->GetClass() + WorldEntity::SpectatorListOffset, &ent->SpectatorListPtr, sizeof(uint64_t));
+
 	}
-	Configs.Player.Chams = false;
 	TargetProcess.ExecuteReadScatter(handle);
 	TargetProcess.ExecuteWriteScatter(writehandle);
 
@@ -192,6 +195,21 @@ void Environment::UpdatePlayerList()
 		if (ent == nullptr) continue;
 		ent->ApplyBoneWorldTransform();
 	}
+
+	// Second-pass: read SpectatorCount from SpectatorListPtr+0x08 for each player
+	auto handle2 = TargetProcess.CreateScatterHandle();
+	for (size_t index = 0; index < templist.size(); ++index)
+	{
+		std::shared_ptr<WorldEntity> ent = templist[index];
+		if (ent == nullptr) continue;
+		if (ent->SpectatorListPtr > 0x10000 && ent->SpectatorListPtr < 0x7FFFFFFFFFFF)
+			TargetProcess.AddScatterReadRequest(handle2, ent->SpectatorListPtr + WorldEntity::SpectatorCountOff2, &ent->SpectatorCount, sizeof(int));
+		else
+			ent->SpectatorCount = 0;
+	}
+	TargetProcess.ExecuteReadScatter(handle2);
+	TargetProcess.CloseScatterHandle(handle2);
+
 
 	TargetProcess.CloseScatterHandle(handle);
 	TargetProcess.CloseScatterHandle(writehandle);
@@ -234,6 +252,8 @@ void Environment::UpdateBossesList()
 			ent->SetValid(false); // TODO might be wrong, bosses happen to disappear from ESP
 			continue;
 		}
+		if (Configs.Bosses.Chams)
+			ent->WriteNode(writehandle, Configs.Bosses.ChamMode, Configs.Bosses.Chams);
 		ent->UpdateNode(handle);
 		ent->UpdatePosition(handle);
 		ent->UpdateClass(handle);
@@ -247,6 +267,31 @@ void Environment::UpdateBossesList()
 	BossesList = templist;
 }
 
+void Environment::UpdateGruntList()
+{
+	std::vector<std::shared_ptr<WorldEntity>> templist = GruntList;
+	if (templist.size() == 0)
+		return;
+	auto handle = TargetProcess.CreateScatterHandle();
+	for (std::shared_ptr<WorldEntity> ent : templist)
+	{
+		if (ent == nullptr)
+			continue;
+		if (!(ent->GetClass() > 0x2000000 && ent->GetClass() < 0x7FFFFFFFFFFF))
+		{
+			ent->SetValid(false);
+			continue;
+		}
+		ent->UpdateNode(handle);
+		ent->UpdatePosition(handle);
+		ent->UpdateClass(handle);
+	}
+	TargetProcess.ExecuteReadScatter(handle);
+	TargetProcess.CloseScatterHandle(handle);
+
+	GruntList = templist;
+}
+
 // ── Double-buffer: commit live data → render-safe copies ─────────────────
 // Called under brief EntityMutex after all DMA scatter reads complete.
 void Environment::CommitToRenderBuffer()
@@ -258,6 +303,10 @@ void Environment::CommitToRenderBuffer()
 	for (auto& ent : BossesList)
 		if (ent) ent->CommitRenderData();
 	RenderBossesList = BossesList;
+
+	for (auto& ent : GruntList)
+		if (ent) ent->CommitRenderData();
+	RenderGruntList = GruntList;
 }
 
 void Environment::CacheEntities()
@@ -346,6 +395,7 @@ void Environment::CacheEntities()
 	std::vector<std::shared_ptr<WorldEntity>> temptraplist;
 	std::vector<std::shared_ptr<WorldEntity>> temppoilist;
 	std::vector<std::shared_ptr<WorldEntity>> temptraitlist;
+	std::vector<std::shared_ptr<WorldEntity>> tempgruntlist;
 
 	// Weapon entities: collect during classification, match to players by position later
 	struct WeaponInfo {
@@ -401,6 +451,113 @@ void Environment::CacheEntities()
 			templayerlist.push_back(ent);
 			continue;
 		}
+		// ── AI Grunt (class: grunt) — รวมทุก variant ──────────────────────────
+		if ((std::string)entityClassName == "grunt")
+		{
+			ent->SetType(EntityType::Grunt);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Hellhound (class: dog_base) — confirmed ───────────────────────────
+		if ((std::string)entityClassName == "dog_base")
+		{
+			ent->SetType(EntityType::Hellhound);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Ambient Animals ───────────────────────────────────────────────────
+		if ((std::string)entityClassName == "Crows")
+		{
+			ent->SetType(EntityType::Crow);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		if ((std::string)entityClassName == "DyingCow" || strstr(entityClassName, "DyingCow") != NULL)
+		{
+			ent->SetType(EntityType::DyingCow);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		if ((std::string)entityClassName == "DyingHorse" || strstr(entityClassName, "DyingHorse") != NULL)
+		{
+			ent->SetType(EntityType::DyingHorse);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		if ((std::string)entityClassName == "Ducks")
+		{
+			ent->SetType(EntityType::Duck);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		if ((std::string)entityClassName == "Bats" || strstr(entityClassName, "Bat") != NULL)
+		{
+			ent->SetType(EntityType::Bat);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Leech (class: special_meathead_leech) — confirmed ────────────────
+		if ((std::string)entityClassName == "special_meathead_leech")
+		{
+			ent->SetType(EntityType::Leech);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Meathead (class: special_meathead) — confirmed ──────────────────
+		if ((std::string)entityClassName == "special_meathead")
+		{
+			ent->SetType(EntityType::Meathead);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── AI Special (class: grunt_base / special_grunt_base) ─────────────
+		// Armored   = Name มี "Armored" หรือ TypeName มี "M20" (Grunts.M20.Wander)
+		// SpecialAI = อื่น ๆ
+		if ((std::string)entityClassName == "grunt_base" ||
+		    (std::string)entityClassName == "special_grunt_base")
+		{
+			bool isArmored = (strstr(entityName, "Armored") != NULL ||
+			                  strstr(entityName, "armored") != NULL ||
+			                  strstr(entityTypeName, "M20") != NULL);
+			if (isArmored)
+			{
+				ent->SetType(EntityType::Armored);
+			}
+			else
+			{
+				ent->SetType(EntityType::SpecialAI);
+			}
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Hive (class: hive_template) ─────────────────────────────────────
+		if ((std::string)entityClassName == "hive_template")
+		{
+			ent->SetType(EntityType::Hive);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Water Devil (class: waterdevil_template) ─────────────────────────
+		if ((std::string)entityClassName == "waterdevil_template")
+		{
+			ent->SetType(EntityType::WaterDevil);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Immolator AI (class: immolator_template) — AI enemy ในแมพ ────────
+		if ((std::string)entityClassName == "immolator_template")
+		{
+			ent->SetType(EntityType::Immolator);
+			tempgruntlist.push_back(ent);
+			continue;
+		}
+		// ── Hellborn (class: immolator_elite) — Boss version ─────────────────
+		if ((std::string)entityClassName == "immolator_elite")
+		{
+			ent->SetType(EntityType::Hellborn);
+			tempbosseslist.push_back(ent);
+			continue;
+		}
 		if (strstr(entityClassName, "target_assassin") != NULL)
 		{
 			ent->SetType(EntityType::Assassin);
@@ -428,12 +585,6 @@ void Environment::CacheEntities()
 		if (strstr(entityClassName, "target_rotjaw") != NULL)
 		{
 			ent->SetType(EntityType::Rotjaw);
-			tempbosseslist.push_back(ent);
-			continue;
-		}
-		if (strstr(entityClassName, "immolator_elite") != NULL)
-		{
-			ent->SetType(EntityType::Hellborn);
 			tempbosseslist.push_back(ent);
 			continue;
 		}
@@ -783,6 +934,12 @@ void Environment::CacheEntities()
 			continue;
 		ent->SetUp3(handle);
 	}
+	for (std::shared_ptr<WorldEntity> ent : tempgruntlist)
+	{
+		if (ent == nullptr)
+			continue;
+		ent->SetUp3(handle);
+	}
 	TargetProcess.ExecuteReadScatter(handle);
 
 	for (std::shared_ptr<WorldEntity> ent : temptraitlist)
@@ -891,6 +1048,7 @@ void Environment::CacheEntities()
 	std::swap(TrapList, temptraplist);
 	std::swap(POIList, temppoilist);
 	std::swap(TraitList, temptraitlist);
+	std::swap(GruntList, tempgruntlist);
 }
 
 // ── Proximity-based team grouping (runs once per map load) ──────────────────

@@ -8,7 +8,17 @@ void DrawSpectators()
 {
 	if (EnvironmentInstance == nullptr) return;
 
-	int spectatorCount = EnvironmentInstance->GetSpectatorCount();
+	// อ่านจาก LocalPlayer entity โดยตรง (entity+0x70+0x08) — ง่ายและแม่นกว่า pointer chain เดิม
+	int spectatorCount = 0;
+	for (auto& ent : EnvironmentInstance->GetRenderPlayerList())
+	{
+		if (!ent) continue;
+		if (ent->Render.Type == EntityType::LocalPlayer)
+		{
+			spectatorCount = ent->SpectatorCount;
+			break;
+		}
+	}
 
 	if (spectatorCount <= 0 || spectatorCount > 11) return;
 

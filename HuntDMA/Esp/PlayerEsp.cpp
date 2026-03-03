@@ -21,6 +21,8 @@ std::shared_ptr<CheatFunction> UpdatePlayers =
     });
 std::shared_ptr<CheatFunction> UpdateBosses = std::make_shared<CheatFunction>(
     5, [] { EnvironmentInstance->UpdateBossesList(); });
+std::shared_ptr<CheatFunction> UpdateGrunts = std::make_shared<CheatFunction>(
+    5, [] { EnvironmentInstance->UpdateGruntList(); });
 
 // Helper function to get health bar color based on HP percentage
 static ImVec4 GetHealthBarColor(unsigned int currentHp, unsigned int maxHp) {

@@ -19,6 +19,7 @@ public:
     int OpenMenuKey = 36;
     bool CloseMenuOnEsc = true;
     std::string Language = "en";
+    uint8_t HotkeyListMask = 0;  // bitmask: bit N = feature N is shown in Quick Toggles
 
     void ToJsonColor(json* j, const std::string& name, ImVec4* color)
     {
@@ -52,6 +53,7 @@ public:
         j[ConfigName][LIT("OpenMenuKey")] = OpenMenuKey;
         j[ConfigName][LIT("CloseMenuOnEsc")] = CloseMenuOnEsc;
         j[ConfigName][LIT("Language")] = Language;
+        j[ConfigName][LIT("HotkeyListMask")] = HotkeyListMask;
 
         return j;
     }
@@ -80,6 +82,8 @@ public:
             CloseMenuOnEsc = j[ConfigName][LIT("CloseMenuOnEsc")];
         if (j[ConfigName].contains(LIT("Language")))
             Language = j[ConfigName][LIT("Language")];
+        if (j[ConfigName].contains(LIT("HotkeyListMask")))
+            HotkeyListMask = j[ConfigName][LIT("HotkeyListMask")];
     }
 };
 

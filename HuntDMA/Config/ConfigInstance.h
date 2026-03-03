@@ -2,6 +2,7 @@
 #include "Pch.h"
 #include "PlayerConfig.h"
 #include "BossesConfig.h"
+#include "GruntConfig.h"
 #include "SupplyConfig.h"
 #include "BloodBondsConfig.h"
 #include "TrapConfig.h"
@@ -16,6 +17,7 @@ public:
 	GeneralConfig General = GeneralConfig(LIT("General"));
 	PlayerConfig Player = PlayerConfig(LIT("Player"));
 	BossesConfig Bosses = BossesConfig(LIT("Bosses"));
+	GruntConfig Grunt = GruntConfig(LIT("Grunt"));
 	SupplyConfig Supply = SupplyConfig(LIT("Supply"));
 	BloodBondsConfig BloodBonds = BloodBondsConfig(LIT("BloodBouds"));
 	TrapConfig Trap = TrapConfig(LIT("Trap"));
@@ -30,6 +32,7 @@ public:
 		jsoned.merge_patch(General.ToJson());
 		jsoned.merge_patch(Player.ToJson());
 		jsoned.merge_patch(Bosses.ToJson());
+		jsoned.merge_patch(Grunt.ToJson());
 		jsoned.merge_patch(Supply.ToJson());
 		jsoned.merge_patch(BloodBonds.ToJson());
 		jsoned.merge_patch(Trap.ToJson());
@@ -45,6 +48,7 @@ public:
 		General.FromJson(jsoned);
 		Player.FromJson(jsoned);
 		Bosses.FromJson(jsoned);
+		Grunt.FromJson(jsoned);
 		Supply.FromJson(jsoned);
 		BloodBonds.FromJson(jsoned);
 		Trap.FromJson(jsoned);

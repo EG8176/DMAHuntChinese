@@ -28,15 +28,18 @@ private:
     // Menu rendering methods
     void RenderPlayerESPTab();
     void RenderBossesESPTab();
+
+    void RenderWorldItemsTab();   // Supply + BloodBond + Traps + POI
+    // Legacy tab functions (definitions still in .cpp — kept for compilation)
     void RenderSupplyESPTab();
     void RenderBloodBondsESPTab();
     void RenderTrapESPTab();
     void RenderPOIESPTab();
+    void RenderHotkeysTab();
     void RenderTraitESPTab();
     void RenderOverlayTab();
     void RenderAimbotTab();
-    void RenderSettingsTab();
-    void RenderHotkeysTab();
+    void RenderSettingsTab();      // includes Hotkeys section
 
     bool RenderFontSizeSlider(const char* label, int& configValue);
 

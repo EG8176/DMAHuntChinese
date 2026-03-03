@@ -112,6 +112,7 @@ void DmaDataUpdateThread()
 			UpdateCam->Execute();
 			UpdatePlayers->Execute();
 			UpdateBosses->Execute();
+			UpdateGrunts->Execute();
 
 			// Phase 2: Commit snapshot — brief lock (~microseconds)
 			// Copies all live data → render-safe snapshot so render thread sees consistent data.

@@ -308,9 +308,11 @@ void WorldEntity::CommitRenderData()
 	Render.InternalFlags = InternalFlags;
 	Render.Valid         = Valid;
 	Render.Hidden        = Hidden;
-	Render.WeaponName1   = WeaponName1;
-	Render.WeaponName2   = WeaponName2;
-	Render.TeamId        = TeamId;
+	Render.WeaponName1     = WeaponName1;
+	Render.WeaponName2     = WeaponName2;
+	Render.TeamId          = TeamId;
+	Render.IsSpectator     = IsSpectator;
+	Render.SpectatorCount  = SpectatorCount;
 	memcpy(Render.BonePositions, BonePositions, sizeof(BonePositions));
 }
 

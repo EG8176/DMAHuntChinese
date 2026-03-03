@@ -457,6 +457,103 @@ void DrawTraits() {
   }
 }
 
+void DrawGrunts() {
+  // Brief lock to copy render list, then release — same pattern as DrawBossesEsp
+  std::vector<std::shared_ptr<WorldEntity>> templist;
+  {
+    std::lock_guard<std::mutex> lock(EntityMutex);
+    templist = EnvironmentInstance->GetRenderGruntList();
+  }
+
+  if (templist.empty())
+    return;
+
+  for (std::shared_ptr<WorldEntity> ent : templist) {
+    if (ent == nullptr)
+      continue;
+
+    if (!ent->Render.Valid)
+      continue;
+
+    auto type = ent->Render.Type;
+
+    // ── Toggle per AI type (Unknown/debug ไม่ filter) ─────────────────────
+    if (type == EntityType::Grunt      && !Configs.Grunt.EnableGrunts)     continue;
+    if (type == EntityType::Armored    && !Configs.Grunt.EnableArmored)    continue;
+    if (type == EntityType::Meathead   && !Configs.Grunt.EnableMeathead)   continue;
+    if (type == EntityType::Hive       && !Configs.Grunt.EnableHive)       continue;
+    if (type == EntityType::WaterDevil && !Configs.Grunt.EnableWaterDevil) continue;
+    if (type == EntityType::Immolator  && !Configs.Grunt.EnableImmolator)  continue;
+    if (type == EntityType::Hellhound  && !Configs.Grunt.EnableHellhound)  continue;
+    if (type == EntityType::Leech      && !Configs.Grunt.EnableLeech)      continue;
+    if (type == EntityType::SpecialAI  && !Configs.Grunt.EnableSpecial)    continue;
+    // Animals — master toggle
+    if (!Configs.Grunt.EnableAnimals) {
+      if (type == EntityType::Crow || type == EntityType::DyingCow ||
+          type == EntityType::DyingHorse || type == EntityType::Duck ||
+          type == EntityType::Bat) continue;
+    }
+    if (type == EntityType::Crow       && !Configs.Grunt.EnableCrow)       continue;
+    if (type == EntityType::DyingCow   && !Configs.Grunt.EnableDyingCow)   continue;
+    if (type == EntityType::DyingHorse && !Configs.Grunt.EnableDyingHorse) continue;
+    if (type == EntityType::Duck       && !Configs.Grunt.EnableDuck)       continue;
+    if (type == EntityType::Bat        && !Configs.Grunt.EnableBat)        continue;
+
+    int distance = (int)Vector3::Distance(ent->Render.Position,
+                                          CameraInstance->GetRenderPosition());
+    if (distance <= 0 || distance > Configs.Grunt.MaxDistance)
+      continue;
+
+    Vector2 pos = CameraInstance->RenderWorldToScreen(ent->Render.Position);
+    if (pos.x == 0 || pos.y == 0)
+      continue;
+
+    // ── เลือกสีตาม type ───────────────────────────────────────────────────
+    ImVec4 color;
+    switch (type) {
+        case EntityType::Hellborn:   color = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);     break; // orange = Immolator
+        case EntityType::Armored:    color = Configs.Grunt.ColorArmored;           break;
+        case EntityType::Meathead:   color = Configs.Grunt.ColorMeathead;          break;
+        case EntityType::Hive:       color = Configs.Grunt.ColorHive;              break;
+        case EntityType::WaterDevil: color = Configs.Grunt.ColorWaterDevil; break;
+        case EntityType::Immolator:  color = Configs.Grunt.ColorImmolator;  break;
+        case EntityType::Hellhound:  color = Configs.Grunt.ColorHellhound;  break;
+        case EntityType::Leech:      color = Configs.Grunt.ColorLeech;             break;
+        case EntityType::SpecialAI:  color = Configs.Grunt.ColorSpecial;           break;
+        case EntityType::Crow:       color = Configs.Grunt.ColorCrow;       break;
+        case EntityType::DyingCow:   color = Configs.Grunt.ColorDyingCow;   break;
+        case EntityType::DyingHorse: color = Configs.Grunt.ColorDyingHorse; break;
+        case EntityType::Duck:       color = Configs.Grunt.ColorDuck;       break;
+        case EntityType::Bat:        color = Configs.Grunt.ColorBat;        break;
+      default:                     color = Configs.Grunt.ColorGrunt;             break;
+    }
+
+
+    // ── Display: friendly name only ───────────────────────────────────────
+    std::string displayName = Configs.Grunt.ShowName ? ent->GetTypeAsString() : "";
+
+
+    std::string distanceText = "";
+    if (Configs.Grunt.ShowDistance)
+      distanceText = std::vformat(LOC("menu", "esp.Meters"),
+                                  std::make_format_args(distance));
+
+    std::string healthText = "";
+    if (Configs.Grunt.ShowHealth) {
+      auto hp = ent->Render.Health;
+      if (hp.current_max_hp > 0)
+        healthText = " [" + std::to_string(hp.current_hp) + "/" +
+                     std::to_string(hp.current_max_hp) + "]";
+    }
+
+    ESPRenderer::DrawText(ImVec2(pos.x, pos.y),
+                          displayName + distanceText + healthText,
+                          color, Configs.Grunt.FontSize, Center);
+  }
+}
+
+
+
 void DrawOtherEsp() {
   if (EnvironmentInstance == nullptr)
     return;
@@ -478,4 +575,7 @@ void DrawOtherEsp() {
 
   if (Configs.Traits.Enable)
     DrawTraits();
+
+  if (Configs.Grunt.Enable)
+    DrawGrunts();
 }
