@@ -35,7 +35,6 @@ static Vector2 GetHeadScreenPosition(std::shared_ptr<WorldEntity> entity)
 		return Vector2::Zero();
 
 	Vector3 headPos = entity->GetHeadPosition();  // uses bone head if available
-	headPos.z += Configs.Aimbot.HeadOffsetZ;
 
 	Vector2 screenPos = CameraInstance->WorldToScreen(headPos);
 	return screenPos;
@@ -77,12 +76,7 @@ static void RefreshBallisticCache(int presetIndex)
 			const Weapon& w        = it->second;
 			gBallistic.BulletSpeed = w.muzzleVelocity;
 			gBallistic.Drag        = AmmoDrag[w.ammoType];
-
-			float dropAdd  = DropAdd.count(w.ammoType) ? DropAdd[w.ammoType] : 0.0f;
-			float actMult  = ActionMult[w.action];
-			float barMult  = barrelMult[w.slot];
-			float pre      = 1.0f + dropAdd + actMult + barMult;
-			gBallistic.DropMult  = std::max(pre, 0.25f);
+			gBallistic.DropMult    = DropMult.count(w.ammoType) ? DropMult[w.ammoType] : 1.0f;
 			gBallistic.DropRange = w.dropRange;
 			gBallistic.Valid     = true;
 		}
@@ -96,7 +90,7 @@ static Vector2 GetPredictedHeadScreenPosition(std::shared_ptr<WorldEntity> entit
 		return Vector2::Zero();
 
 	Vector3 headPos = entity->GetHeadPosition();  // uses bone head if available
-	headPos.z += Configs.Aimbot.HeadOffsetZ;
+	headPos.z += Configs.Aimbot.PredictionOffsetZ;  // vertical aim adjustment (Prediction only)
 
 	if (Configs.Aimbot.Prediction)
 	{
@@ -118,9 +112,13 @@ static Vector2 GetPredictedHeadScreenPosition(std::shared_ptr<WorldEntity> entit
 		{
 			float travelTime = distance / bulletSpeed;
 
-			// ── Movement lead (disabled — shifts aim too far when enemy moves) ──
-			//float dragFactor = std::max(1.0f - drag, 0.1f);
-			//Vector3 offset   = entity->Velocity * (travelTime * Configs.Aimbot.PredictionScale * dragFactor);
+			// ── Movement lead: predict where target will be when bullet arrives ──
+			if (Configs.Aimbot.MovementPrediction)
+			{
+				float dragFactor = std::max(1.0f - drag, 0.1f);
+				Vector3 lead = entity->Velocity * (travelTime * Configs.Aimbot.MovementLeadScale * dragFactor);
+				headPos = headPos + lead;
+			}
 
 			// ── Bullet drop  s = 0.5 * g * t^2 * dropMult ────────────────
 			float gravity = 9.81f * Configs.Aimbot.GravityScale;

@@ -222,7 +222,7 @@ void WorldEntity::UpdateBones()
 
 	// Map well-known bone names to indices
 	const char* boneNames[MAX_BONES] = {
-		"RT_lookIK", "neck", "pelvis",
+		"head", "neck", "pelvis",
 		"R_upperarm", "R_forearm", "R_hand", "R_thigh", "R_calf", "R_foot",
 		"L_upperarm", "L_forearm", "L_hand", "L_thigh", "L_calf", "L_foot"
 	};
@@ -277,11 +277,6 @@ void WorldEntity::UpdateHeadPosition(VMMDLL_SCATTER_HANDLE handle)
 		// Also read WorldMatrix every frame so rotation tracks player turning
 		TargetProcess.AddScatterReadRequest(handle, Class + WorldMatrixOffset, &WorldMatrix, sizeof(Matrix34));
 	}
-	else
-	{
-		HeadPosition = Position;
-		HeadPosition.z += 1.7f;
-	}
 }
 
 // Call AFTER ExecuteReadScatter — LocalBonePositions[] are local, apply WorldMatrix to get world-space
@@ -291,9 +286,15 @@ void WorldEntity::ApplyBoneWorldTransform()
 	for (int i = 0; i < MAX_BONES; i++)
 	{
 		if (BoneIndex[i] >= 0)
-			BonePositions[i] = WorldMatrix.TransformPoint(LocalBonePositions[i]);
+		{
+			Vector3 transformed = WorldMatrix.TransformPoint(LocalBonePositions[i]);
+			// Flicker-guard: keep previous valid position if scatter read returned zero
+			if (!transformed.IsZero())
+				BonePositions[i] = transformed;
+		}
 	}
-	HeadPosition = BonePositions[0];
+	if (!BonePositions[0].IsZero())
+		HeadPosition = BonePositions[0];
 }
 
 // ── Double-buffer: copy live DMA data → render-safe snapshot ─────────────
@@ -313,6 +314,9 @@ void WorldEntity::CommitRenderData()
 	Render.TeamId          = TeamId;
 	Render.IsSpectator     = IsSpectator;
 	Render.SpectatorCount  = SpectatorCount;
+	// Extract yaw from WorldMatrix column 0 = entity forward vector (X-axis in world)
+	// m[0][0]=Xx, m[1][0]=Xy  → yaw = atan2(Xy, Xx)
+	Render.Yaw = atan2f(WorldMatrix.m[1][0], WorldMatrix.m[0][0]);
 	memcpy(Render.BonePositions, BonePositions, sizeof(BonePositions));
 }
 

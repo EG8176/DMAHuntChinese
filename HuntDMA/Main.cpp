@@ -29,6 +29,7 @@
 #include <chrono>
 #include "resource.h"
 #include "Graphics/DisplayManager.h"
+#include "WebRadar.h"
 
 std::mutex EntityMutex;
 
@@ -158,6 +159,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         LOG_INFO("Initializing configurations...");
         SetUpConfig();
         LoadConfig(ConfigPath);
+
+        // Auto-start web radar if it was enabled when config was saved
+        if (Configs.WebRadar.EnableWebRadar) {
+            LOG_INFO("Auto-starting Web Radar on port %d...", Configs.WebRadar.Port);
+            g_WebRadar.Start(Configs.WebRadar.Host, Configs.WebRadar.Port);
+        }
 
         LOG_INFO("Initializing localization system...");
         Localization::Initialize();

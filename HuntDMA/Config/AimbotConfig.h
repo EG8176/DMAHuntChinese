@@ -15,7 +15,6 @@ public:
     int         Priority        = 0;       // 0=Distance, 1=Crosshair, 2=Both
     int         FOV             = 200;     // pixels radius
     int         Aimkey          = 5;       // VK code (5 = RMB)
-    float       HeadOffsetZ     = 0.0f;    // vertical bone-head offset (meters, +=up, -=down)
     bool        IgnoreDead      = true;    // skip dead/downed players in target selection
     bool        LockOnKill      = false;   // require key release before targeting next enemy
 
@@ -49,6 +48,9 @@ public:
     float       BulletSpeed         = 500.0f;// m/s — used only when WeaponPreset==0
     float       PredictionScale     = 1.0f;  // lead strength multiplier
     float       GravityScale        = 1.0f;  // multiplier on 9.81 m/s²
+    float       PredictionOffsetZ   = 0.0f;  // vertical aim offset during prediction (meters, +=up)
+    bool        MovementPrediction  = false; // lead target based on velocity
+    float       MovementLeadScale   = 1.0f;  // multiplier on movement lead (1.0 = physics-accurate)
 
     // ─────────────────────────────────────────────────────────────────────
     //  JSON helpers
@@ -82,7 +84,6 @@ public:
         j[ConfigName][LIT("Priority")]          = Priority;
         j[ConfigName][LIT("FOV")]               = FOV;
         j[ConfigName][LIT("Aimkey")]            = Aimkey;
-        j[ConfigName][LIT("HeadOffsetZ")]       = HeadOffsetZ;
         j[ConfigName][LIT("IgnoreDead")]         = IgnoreDead;
         j[ConfigName][LIT("LockOnKill")]         = LockOnKill;
         // KMBox
@@ -106,11 +107,14 @@ public:
         j[ConfigName][LIT("AxisNoiseMin")]      = AxisNoiseMin;
         j[ConfigName][LIT("AxisNoiseMax")]      = AxisNoiseMax;
         // Ballistic
-        j[ConfigName][LIT("Prediction")]        = Prediction;
-        j[ConfigName][LIT("WeaponPreset")]      = WeaponPreset;
-        j[ConfigName][LIT("BulletSpeed")]       = BulletSpeed;
-        j[ConfigName][LIT("PredictionScale")]   = PredictionScale;
-        j[ConfigName][LIT("GravityScale")]      = GravityScale;
+        j[ConfigName][LIT("Prediction")]          = Prediction;
+        j[ConfigName][LIT("WeaponPreset")]        = WeaponPreset;
+        j[ConfigName][LIT("BulletSpeed")]         = BulletSpeed;
+        j[ConfigName][LIT("PredictionScale")]     = PredictionScale;
+        j[ConfigName][LIT("GravityScale")]        = GravityScale;
+        j[ConfigName][LIT("PredictionOffsetZ")]   = PredictionOffsetZ;
+        j[ConfigName][LIT("MovementPrediction")]  = MovementPrediction;
+        j[ConfigName][LIT("MovementLeadScale")]   = MovementLeadScale;
         return j;
     }
 
@@ -125,7 +129,6 @@ public:
         if (c.contains(LIT("Priority")))        Priority       = c[LIT("Priority")];
         if (c.contains(LIT("FOV")))             { FOV = c[LIT("FOV")]; if (FOV < 1) FOV = 200; }
         if (c.contains(LIT("Aimkey")))          Aimkey         = c[LIT("Aimkey")];
-        if (c.contains(LIT("HeadOffsetZ")))     HeadOffsetZ    = c[LIT("HeadOffsetZ")];
         if (c.contains(LIT("IgnoreDead")))       IgnoreDead     = c[LIT("IgnoreDead")];
         if (c.contains(LIT("LockOnKill")))       LockOnKill     = c[LIT("LockOnKill")];
         // KMBox
@@ -149,10 +152,13 @@ public:
         if (c.contains(LIT("AxisNoiseMin")))      AxisNoiseMin      = c[LIT("AxisNoiseMin")];
         if (c.contains(LIT("AxisNoiseMax")))      AxisNoiseMax      = c[LIT("AxisNoiseMax")];
         // Ballistic
-        if (c.contains(LIT("Prediction")))      Prediction     = c[LIT("Prediction")];
-        if (c.contains(LIT("WeaponPreset")))    WeaponPreset   = c[LIT("WeaponPreset")];
-        if (c.contains(LIT("BulletSpeed")))     BulletSpeed    = c[LIT("BulletSpeed")];
-        if (c.contains(LIT("PredictionScale"))) PredictionScale= c[LIT("PredictionScale")];
-        if (c.contains(LIT("GravityScale")))    GravityScale   = c[LIT("GravityScale")];
+        if (c.contains(LIT("Prediction")))          Prediction       = c[LIT("Prediction")];
+        if (c.contains(LIT("WeaponPreset")))        WeaponPreset     = c[LIT("WeaponPreset")];
+        if (c.contains(LIT("BulletSpeed")))         BulletSpeed      = c[LIT("BulletSpeed")];
+        if (c.contains(LIT("PredictionScale")))     PredictionScale  = c[LIT("PredictionScale")];
+        if (c.contains(LIT("GravityScale")))        GravityScale     = c[LIT("GravityScale")];
+        if (c.contains(LIT("PredictionOffsetZ")))   PredictionOffsetZ= c[LIT("PredictionOffsetZ")];
+        if (c.contains(LIT("MovementPrediction")))  MovementPrediction = c[LIT("MovementPrediction")];
+        if (c.contains(LIT("MovementLeadScale")))   MovementLeadScale  = c[LIT("MovementLeadScale")];
     }
 };

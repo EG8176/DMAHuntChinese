@@ -66,13 +66,13 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\Config;$(SolutionDir)$(ProjectName)\Graphics\start up;$(SolutionDir)$(ProjectName)\Esp;$(SolutionDir)$(ProjectName)\Graphics\entities;$(SolutionDir)$(ProjectName)\Graphics\utility;$(SolutionDir)$(ProjectName)\Graphics;$(SolutionDir)$(ProjectName)\Security;$(SolutionDir)$(ProjectName)\Aimbot;$(SolutionDir)$(ProjectName)\SDK;$(SolutionDir)$(ProjectName)\Misc\Pch;$(SolutionDir)$(ProjectName)\Memory;$(SolutionDir)$(ProjectName)\;$(SolutionDir)$(ProjectName)\Misc;$(SolutionDir)$(ProjectName)\Sockets;$(SolutionDir)$(ProjectName)\ESP;$(SolutionDir)$(ProjectName)\json;$(SolutionDir)$(ProjectName)\Logger;$(SolutionDir)$(ProjectName)\Libs\ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\Config;$(SolutionDir)$(ProjectName)\Graphics\start up;$(SolutionDir)$(ProjectName)\Esp;$(SolutionDir)$(ProjectName)\Graphics\entities;$(SolutionDir)$(ProjectName)\Graphics\utility;$(SolutionDir)$(ProjectName)\Graphics;$(SolutionDir)$(ProjectName)\Security;$(SolutionDir)$(ProjectName)\Aimbot;$(SolutionDir)$(ProjectName)\SDK;$(SolutionDir)$(ProjectName)\Misc\Pch;$(SolutionDir)$(ProjectName)\Memory;$(SolutionDir)$(ProjectName)\;$(SolutionDir)$(ProjectName)\Misc;$(SolutionDir)$(ProjectName)\Sockets;$(SolutionDir)$(ProjectName)\ESP;$(SolutionDir)$(ProjectName)\json;$(SolutionDir)$(ProjectName)\Logger;$(SolutionDir)$(ProjectName)\Libs\ImGui;$(SolutionDir)$(ProjectName)\WebRadar</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -92,7 +92,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\Config;$(SolutionDir)$(ProjectName)\Graphics\start up;$(SolutionDir)$(ProjectName)\Esp;$(SolutionDir)$(ProjectName)\Graphics\entities;$(SolutionDir)$(ProjectName)\Graphics\utility;$(SolutionDir)$(ProjectName)\Graphics;$(SolutionDir)$(ProjectName)\Security;$(SolutionDir)$(ProjectName)\Aimbot;$(SolutionDir)$(ProjectName)\SDK;$(SolutionDir)$(ProjectName)\Misc\Pch;$(SolutionDir)$(ProjectName)\Memory;$(SolutionDir)$(ProjectName)\;$(SolutionDir)$(ProjectName)\Misc;$(SolutionDir)$(ProjectName)\Sockets;$(SolutionDir)$(ProjectName)\ESP;$(SolutionDir)$(ProjectName)\json;$(SolutionDir)$(ProjectName)\Logger;$(SolutionDir)$(ProjectName)\Libs\ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\Config;$(SolutionDir)$(ProjectName)\Graphics\start up;$(SolutionDir)$(ProjectName)\Esp;$(SolutionDir)$(ProjectName)\Graphics\entities;$(SolutionDir)$(ProjectName)\Graphics\utility;$(SolutionDir)$(ProjectName)\Graphics;$(SolutionDir)$(ProjectName)\Security;$(SolutionDir)$(ProjectName)\Aimbot;$(SolutionDir)$(ProjectName)\SDK;$(SolutionDir)$(ProjectName)\Misc\Pch;$(SolutionDir)$(ProjectName)\Memory;$(SolutionDir)$(ProjectName)\;$(SolutionDir)$(ProjectName)\Misc;$(SolutionDir)$(ProjectName)\Sockets;$(SolutionDir)$(ProjectName)\ESP;$(SolutionDir)$(ProjectName)\json;$(SolutionDir)$(ProjectName)\Logger;$(SolutionDir)$(ProjectName)\Libs\ImGui;$(SolutionDir)$(ProjectName)\WebRadar</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -100,7 +100,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)HuntDMA.manifest</AdditionalManifestFiles>
@@ -142,6 +142,7 @@
     <ClCompile Include="Logger\Logger.cpp" />
     <ClCompile Include="SDK\WorldEntity.cpp" />
     <ClCompile Include="SDK\Environment.cpp" />
+    <ClCompile Include="WebRadar\WebRadar.cpp" />
     <ClCompile Include="Libs\ImGui\imgui.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -208,6 +209,8 @@
     <ClInclude Include="Logger\Logger.h" />
     <ClInclude Include="SDK\WorldEntity.h" />
     <ClInclude Include="SDK\Environment.h" />
+    <ClInclude Include="Config\WebRadarConfig.h" />
+    <ClInclude Include="WebRadar\WebRadar.h" />
     <ClInclude Include="Security\XorStr.h" />
     <ClInclude Include="Libs\ImGui\imgui.h" />
     <ClInclude Include="Libs\ImGui\imgui_internal.h" />

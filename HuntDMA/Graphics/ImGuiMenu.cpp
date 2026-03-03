@@ -8,6 +8,7 @@
 #include "Localization/Localization.h"
 #include "WeaponPresets.h"
 #include "DisplayManager.h"
+#include "WebRadar.h"
 
 // Global instances
 ImGuiMenu g_ImGuiMenu;
@@ -1033,12 +1034,12 @@ void ImGuiMenu::RenderWorldItemsTab() {
 
     // ── Supply ────────────────────────────────────────────────────────────
     if (WorldSection("Supply ESP")) {
-        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Supply.Enable);
+        ImGui::Checkbox((LOC("menu", "general.Enable") + "##supply").c_str(), &Configs.Supply.Enable);
         ImGui::SameLine();
-        ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.Supply.TextColor);
-        ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.Supply.Name);
+        ColorPickerWithText((LOC("menu", "general.TextColor") + "##supply").c_str(), &Configs.Supply.TextColor);
+        ImGui::Checkbox((LOC("menu", "general.Name") + "##supply").c_str(), &Configs.Supply.Name);
         ImGui::SameLine();
-        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Supply.Distance);
+        ImGui::Checkbox((LOC("menu", "general.Distance") + "##supply").c_str(), &Configs.Supply.Distance);
         ImGui::SliderInt("Max Distance##supply", &Configs.Supply.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
         RenderFontSizeSlider("Text Size##supply", Configs.Supply.FontSize);
         ImGui::Spacing();
@@ -1063,13 +1064,13 @@ void ImGuiMenu::RenderWorldItemsTab() {
 
     // ── Blood Bond ────────────────────────────────────────────────────────
     if (WorldSection("Blood Bond ESP", false)) {
-        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.BloodBonds.Enable);
+        ImGui::Checkbox((LOC("menu", "general.Enable") + "##bb").c_str(), &Configs.BloodBonds.Enable);
         ImGui::SameLine(); HelpMarker(LOC("menu", "bb.HelpMarker").c_str());
         ImGui::SameLine();
-        ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.BloodBonds.TextColor);
-        ImGui::Checkbox(LOC("menu", "general.Name").c_str(), &Configs.BloodBonds.Name);
+        ColorPickerWithText((LOC("menu", "general.TextColor") + "##bb").c_str(), &Configs.BloodBonds.TextColor);
+        ImGui::Checkbox((LOC("menu", "general.Name") + "##bb").c_str(), &Configs.BloodBonds.Name);
         ImGui::SameLine();
-        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.BloodBonds.Distance);
+        ImGui::Checkbox((LOC("menu", "general.Distance") + "##bb").c_str(), &Configs.BloodBonds.Distance);
         ImGui::SliderInt("Max Distance##bb", &Configs.BloodBonds.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
         RenderFontSizeSlider("Text Size##bb", Configs.BloodBonds.FontSize);
         ImGui::Spacing();
@@ -1077,14 +1078,14 @@ void ImGuiMenu::RenderWorldItemsTab() {
 
     // ── Traps & Barrels ────────────────────────────────────────────────────
     if (WorldSection("Traps & Barrels", false)) {
-        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.Trap.Enable);
+        ImGui::Checkbox((LOC("menu", "general.Enable") + "##trap").c_str(), &Configs.Trap.Enable);
         ImGui::SameLine();
-        ColorPickerWithText(LOC("menu", "traps.TrapColor").c_str(),   &Configs.Trap.TrapColor);
+        ColorPickerWithText((LOC("menu", "traps.TrapColor") + "##trap").c_str(),   &Configs.Trap.TrapColor);
         ImGui::SameLine();
-        ColorPickerWithText(LOC("menu", "traps.BarrelColor").c_str(), &Configs.Trap.BarrelColor);
-        ImGui::Checkbox(LOC("menu", "general.Name").c_str(),     &Configs.Trap.Name);
+        ColorPickerWithText((LOC("menu", "traps.BarrelColor") + "##trap").c_str(), &Configs.Trap.BarrelColor);
+        ImGui::Checkbox((LOC("menu", "general.Name") + "##trap").c_str(),     &Configs.Trap.Name);
         ImGui::SameLine();
-        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.Trap.Distance);
+        ImGui::Checkbox((LOC("menu", "general.Distance") + "##trap").c_str(), &Configs.Trap.Distance);
         ImGui::SliderInt("Max Distance##trap", &Configs.Trap.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
         RenderFontSizeSlider("Text Size##trap", Configs.Trap.FontSize);
         ImGui::Spacing();
@@ -1107,12 +1108,12 @@ void ImGuiMenu::RenderWorldItemsTab() {
 
     // ── Points of Interest ─────────────────────────────────────────────────
     if (WorldSection("Points of Interest", false)) {
-        ImGui::Checkbox(LOC("menu", "general.Enable").c_str(), &Configs.POI.Enable);
+        ImGui::Checkbox((LOC("menu", "general.Enable") + "##poi").c_str(), &Configs.POI.Enable);
         ImGui::SameLine();
-        ColorPickerWithText(LOC("menu", "general.TextColor").c_str(), &Configs.POI.TextColor);
-        ImGui::Checkbox(LOC("menu", "general.Name").c_str(),     &Configs.POI.Name);
+        ColorPickerWithText((LOC("menu", "general.TextColor") + "##poi").c_str(), &Configs.POI.TextColor);
+        ImGui::Checkbox((LOC("menu", "general.Name") + "##poi").c_str(),     &Configs.POI.Name);
         ImGui::SameLine();
-        ImGui::Checkbox(LOC("menu", "general.Distance").c_str(), &Configs.POI.Distance);
+        ImGui::Checkbox((LOC("menu", "general.Distance") + "##poi").c_str(), &Configs.POI.Distance);
         ImGui::SliderInt("Max Distance##poi", &Configs.POI.MaxDistance, 0, 1500, LOC("menu", "general.Meters").c_str());
         RenderFontSizeSlider("Text Size##poi", Configs.POI.FontSize);
         ImGui::Spacing();
@@ -1597,10 +1598,84 @@ void ImGuiMenu::RenderOverlayTab() {
     }
     ImGui::EndGroup();
 
+    // ── Web Radar ─────────────────────────────────────────────────────────
+    SectionHeader("Web Radar");
+
+    ImGui::BeginGroup();
+
+    // Enable toggle
+    if (ImGui::Checkbox("Enable Web Radar", &Configs.WebRadar.EnableWebRadar)) {
+        if (Configs.WebRadar.EnableWebRadar) {
+            g_WebRadar.Start(Configs.WebRadar.Host, Configs.WebRadar.Port);
+        } else {
+            g_WebRadar.Stop();
+        }
+    }
+
+    ImGui::Spacing();
+
+    // Host + Port row
+    {
+        float avail = ImGui::GetContentRegionAvail().x;
+        ImGui::SetNextItemWidth(avail * 0.45f);
+        ImGui::InputText("Host##wr", Configs.WebRadar.Host, sizeof(Configs.WebRadar.Host));
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(avail * 0.25f);
+        int port = Configs.WebRadar.Port;
+        if (ImGui::InputInt("Port##wr", &port, 0, 0))
+            if (port > 0 && port < 65536) Configs.WebRadar.Port = port;
+    }
+
+    ImGui::Spacing();
+
+    // Label toggles in 2-col table
+    if (ImGui::BeginTable("##wrflags", 2, ImGuiTableFlags_SizingStretchSame)) {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Enemy Name##wr", &Configs.WebRadar.ShowEnemyName);
+        ImGui::TableNextColumn(); ImGui::Checkbox("Enemy HP##wr",   &Configs.WebRadar.ShowEnemyHP);
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Show Bosses##wr",&Configs.WebRadar.ShowBosses);
+        ImGui::TableNextColumn(); ImGui::Checkbox("Show AI##wr",    &Configs.WebRadar.ShowAI);
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn(); ImGui::Checkbox("Boss Name##wr",  &Configs.WebRadar.ShowBossName);
+        ImGui::TableNextColumn(); ImGui::Checkbox("Boss HP##wr",    &Configs.WebRadar.ShowBossHP);
+        ImGui::EndTable();
+    }
+
+    ImGui::Spacing();
+    ImGui::TextDisabled("World Bounds (min/max X, min/max Y)");
+    ImGui::Spacing();
+
+    {
+        float w = ImGui::GetContentRegionAvail().x * 0.22f;
+        ImGui::SetNextItemWidth(w); ImGui::InputFloat("##bminx", &Configs.WebRadar.BoundsMinX, 0,0,"%.0f");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(w); ImGui::InputFloat("##bmaxx", &Configs.WebRadar.BoundsMaxX, 0,0,"%.0f");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(w); ImGui::InputFloat("##bminy", &Configs.WebRadar.BoundsMinY, 0,0,"%.0f");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(w); ImGui::InputFloat("##bmaxy", &Configs.WebRadar.BoundsMaxY, 0,0,"%.0f");
+        ImGui::SameLine();
+        ImGui::TextDisabled("MinX  MaxX  MinY  MaxY");
+    }
+
+    ImGui::Spacing();
+
+    // Status line
+    if (g_WebRadar.IsRunning()) {
+        ImGui::TextColored(ImVec4(0.2f, 0.9f, 0.3f, 1.f), "Status: Running");
+        ImGui::SameLine();
+        char urlbuf[128];
+        snprintf(urlbuf, sizeof(urlbuf), "  http://%s:%d/", Configs.WebRadar.Host, Configs.WebRadar.Port);
+        ImGui::TextDisabled("%s", urlbuf);
+    } else {
+        ImGui::TextColored(ImVec4(0.7f, 0.2f, 0.2f, 1.f), "Status: Stopped");
+    }
+
+    ImGui::EndGroup();
+
     ImGui::EndChild();
 }
-
-
 
 void ImGuiMenu::RenderAimbotTab() {
     ImGui::BeginChild("AimbotTab", ImVec2(0, 0), false);
@@ -1734,13 +1809,6 @@ void ImGuiMenu::RenderAimbotTab() {
         "Both: Balance between distance and crosshair"
     );
 
-    SliderFloatWithInput("Head Offset Z", &Configs.Aimbot.HeadOffsetZ, -0.5f, 0.5f, "%.2f m");
-    ImGui::SameLine(); HelpMarker(
-        "Vertical offset for bone head aim point (meters).\n"
-        "+ = aim higher (above head)\n"
-        "- = aim lower (neck/chest)\n"
-        "0 = exact head bone position"
-    );
     ImGui::EndGroup();
 
     SectionHeader("Prediction");
@@ -1839,6 +1907,29 @@ void ImGuiMenu::RenderAimbotTab() {
             "Multiplier on 9.81 m/s². 1.0 = real gravity.\n"
             "Drag and dropMult are resolved automatically from the weapon preset."
         );
+
+        ImGui::Separator();
+        SliderFloatWithInput("Aim Offset Z", &Configs.Aimbot.PredictionOffsetZ, -0.5f, 0.5f, "%.2f m");
+        ImGui::SameLine(); HelpMarker(
+            "เลื่อนจุดเล็งขึ้น (+) หรือลง (-) จาก bone หัว (หน่วย: เมตร)\n"
+            "+ = เล็งสูงกว่าหัว  |  - = เล็งต่ำกว่าหัว (คอ/อก)\n"
+            "0 = ตำแหน่ง bone หัวพอดี"
+        );
+
+        ImGui::Separator();
+        ImGui::Checkbox("Movement Prediction", &Configs.Aimbot.MovementPrediction);
+        ImGui::SameLine(); HelpMarker(
+            "Lead target based on their movement velocity.\n"
+            "Predicts where the target WILL BE when the bullet arrives.\n"
+            "Formula: pos + velocity * travelTime * (1 - drag) * scale"
+        );
+        if (Configs.Aimbot.MovementPrediction) {
+            SliderFloatWithInput("Lead Scale", &Configs.Aimbot.MovementLeadScale, 0.0f, 2.0f, "%.2f");
+            ImGui::SameLine(); HelpMarker(
+                "Multiplier on movement lead amount.\n"
+                "1.0 = physics-accurate | <1.0 = under-lead | >1.0 = over-lead"
+            );
+        }
 
         // Auto-revert WeaponPreset to Custom if user manually changed BulletSpeed
         if (Configs.Aimbot.WeaponPreset > 0 && Configs.Aimbot.BulletSpeed != prevBulletSpeed)
